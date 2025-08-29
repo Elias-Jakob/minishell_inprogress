@@ -57,29 +57,30 @@ typedef struct s_redirs
     char    *outfile_name;
     char    *heredoc_delimiter;  // NEW: for << operator
     char    *heredoc_content;    // NEW: store heredoc content
-    int     in_fd;
-    int     out_fd;
+		int			fds[2];
     int     append_mode;         // for >>
+		int			is_pipe;
     int     is_heredoc;          // NEW: flag to know if using heredoc
 }   t_redirs;
 
 // Fix s_cmd - missing struct keyword
 typedef struct s_cmd
 {
-    char            argv;
-    t_redirs        *redirs;
-    pid_t           pid;        // use pid_t instead of t_pid
-    struct s_cmd    *next;      // need 'struct' keyword
+	char						**argv;
+	t_redirs				*redirs;
+	pid_t						pid;        // use pid_t instead of t_pid
+	int							is_builin;
+	struct s_cmd		*next;      // need 'struct' keyword
 }   t_cmd;
 
 // Add missing fields to t_pipeline
 typedef struct s_pipeline
 {
-    t_cmd   commands;
-    int     *pipes_fds;
-    pid_t   *pids;              // use pid_t
-    int     cmd_count;          // NEW: how many commands?
-    int     pipe_count;         // NEW: how many pipes? (cmd_count - 1)
+    t_cmd		*commands;
+    int			*pipes_fds;
+    pid_t		*pids;              // use pid_t
+    int			cmd_count;          // NEW: how many commands?
+    int			pipe_count;         // NEW: how many pipes? (cmd_count - 1)
 }   t_pipeline;
 
 // Expand exec_context with essentials
