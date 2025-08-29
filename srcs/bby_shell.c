@@ -1,19 +1,60 @@
 #include "../includes/minishell.h"
 
+static char	*token_type_to_str(t_token_type type)
+{
+		if (type == TK_WORD)
+				return ("WORD");
+		if (type == TK_PIPE)
+				return ("PIPE");
+		if (type == TK_REDIRECT_IN)
+				return ("TK_REDIRECT_IN");
+		if (type == TK_REDIRECT_OUT)
+				return ("TK_REDIRECT_OUT");
+		if (type == TK_APPEND_OUT)
+				return ("TK_APPEND_OUT");
+		if (type == TK_HEREDOC)
+				return ("TK_HEREDOC");
+		if (type == TK_ENV)
+				return ("TK_ENV");
+		if (type == TK_SINGLE_QUOTE)
+				return ("TK_SINGLE_QUOTE");
+		if (type == TK_DOUBLE_QUOTE)
+				return ("TK_DOUBLE_QUOTE");
+		if (type == TK_ERROR)
+				return ("TK_ERROR");
+		return ("Uknown token...");
+}
+
+static void	print_token(t_token *token)
+{
+		if (token)
+				printf("Type: %s\nValue: %s\n", token_type_to_str(token->type), token->value);
+}
+
+
 int	main(int argc, char **argv, char **envp)
 {
 		char			*line;
 		t_exec_context	exec_context;
+		t_list			*token_list;
+
 
 		(void)argc;
 		(void)argv;
 		exec_context.envp = envp;
 		exec_context.paths = getenv("PATH");
-		using_history();
-		stifle_history(15);
+		token_list = ft_lstnew(NULL);
+		// using_history();
+		// stifle_history(3);
 		while ((line = readline("$> ")) != NULL)
 		{
-				printf("%s\n", line);
+				if (lexer(line, &token_list))
+						return (EXIT_FAILURE);
+				while (token_list)
+				{
+						print_token((t_token *)token_list->content);
+						token_list = token_list->next;
+				}
 				add_history(line);
 				free(line);
 		}

@@ -1,7 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include "../libft/libft.h"
+#include "libft.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -33,22 +33,22 @@ typedef enum e_builtin
 
 typedef enum e_token_type
 {
+		TK_WORD,
 		TK_PIPE,
 		TK_REDIRECT_IN,
 		TK_REDIRECT_OUT,
 		TK_APPEND_OUT,
-		TK_LEFT_PARENTHESIS,
-		TK_RIGHT_PARENTHESIS,
+		TK_SINGLE_QUOTE,
+		TK_DOUBLE_QUOTE,
 		TK_HEREDOC,
 		TK_ENV,
-		TK_ERROR,
+		TK_ERROR
 }	t_token_type;
 
 typedef struct	s_token
 {
 		t_token_type	type;
 		char			*value;
-		struct s_token	*next;
 }	t_token;
 
 typedef struct s_redirs
@@ -91,5 +91,7 @@ typedef struct s_exec_context
     int     stdin_backup;       // NEW: to restore stdin after redirections
     int     stdout_backup;      // NEW: to restore stdout after redirections
 }   t_exec_context;
+
+int	lexer(char *input, t_list **token_list);
 
 #endif
