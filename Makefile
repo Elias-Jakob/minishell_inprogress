@@ -1,5 +1,5 @@
 NAME = minishell
-SRCS = srcs/bby_shell.c
+SRCS = srcs/bby_shell.c srcs/lexer/lexer.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a
@@ -14,7 +14,7 @@ $(NAME): $(OBJS) $(LIBFT)
 	$(CC) $(OBJS) $(LIBFT) -o $(NAME) $(LDFLAGS)
 
 $(LIBFT):
-	@make -C $(LIBFT_DIR)
+	@make bonus -C $(LIBFT_DIR)
 
 clean:
 	rm -f $(OBJS)
