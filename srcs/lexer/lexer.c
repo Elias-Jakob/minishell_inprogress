@@ -60,7 +60,7 @@ static t_token_type	scan_for_word(char *input, size_t *length)
 	while (input[*length])
 	{
 		(*length)++;
-		if (!ft_isalnum(input[*length]) || is_space(input[*length]))
+		if ((!ft_isalnum(input[*length]) && *input != '-') || is_space(input[*length]))
 				return (TK_WORD);
 	}
 	return (TK_ERROR);
@@ -112,7 +112,7 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 		return (scan_for_env(input, length));
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
-	if (ft_isalnum(*input))
+	if (ft_isalnum(*input) || *input == '-')
 		return (scan_for_word(input, length));
 	return (TK_ERROR);
 }
@@ -161,4 +161,75 @@ int lexer(char *input, t_list **token_list)
 		i += length;
 	}
 	return (EXIT_SUCCESS);
+}
+
+static int get_argv_amount(t_list *token_list)
+{
+    t_list  *current = token_list;
+    t_token *token;
+    int     arg_amount = 0;
+
+    while (current)
+    {
+        if (!current->content)
+            break;
+        token = (t_token *)current->content;
+        if (!token || !token->value)
+            break;
+        if (token->type != TK_WORD && token->type != TK_DOUBLE_QUOTE)
+            break;
+        arg_amount++;
+        current = current->next;
+    }
+    return (arg_amount);
+}
+
+
+int parser(t_list *token_list, t_list **cmd_list)
+{
+    t_list  *current = token_list;
+    t_token *token;
+    t_cmd   cmd;
+    int     arg_amount;
+
+    while (current)
+    {
+        arg_amount = get_argv_amount(current);
+        printf("[DEBUG] arg_amount = %d\n", arg_amount);
+        if (arg_amount <= 0)
+        {
+            current = current->next;
+            continue;
+        }
+
+        cmd.argv = malloc(sizeof(char *) * (arg_amount + 1));
+        if (!cmd.argv)
+            return (EXIT_FAILURE);
+
+        int i = 0;
+        while (i < arg_amount && current)
+        {
+            token = (t_token *)current->content;
+            if (!token || !token->value)
+            {
+                printf("[DEBUG] NULL token at i=%d\n", i);
+                break;
+            }
+            printf("[DEBUG] token->value = %s\n", token->value);
+            cmd.argv[i] = ft_strdup(token->value);
+            current = current->next;
+            i++;
+        }
+        cmd.argv[i] = NULL;
+
+        t_cmd *new_cmd = malloc(sizeof(t_cmd));
+		if (!new_cmd)
+			return (EXIT_FAILURE);
+        new_cmd->argv = cmd.argv;
+        t_list *new = ft_lstnew(new_cmd);
+		if (!new)
+			return (EXIT_FAILURE);
+        ft_lstadd_back(cmd_list, new);
+    }
+    return (EXIT_SUCCESS);
 }

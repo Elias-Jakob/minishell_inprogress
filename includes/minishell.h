@@ -53,6 +53,7 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
+    int	    is_fd;
     char    *infile_name;
     char    *outfile_name;
     char    *heredoc_delimiter;  // NEW: for << operator
@@ -94,5 +95,6 @@ typedef struct s_exec_context
 }   t_exec_context;
 
 int	lexer(char *input, t_list **token_list);
+int	parser(t_list *token_list, t_list **cmd_list);
 
 #endif
