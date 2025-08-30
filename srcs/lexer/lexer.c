@@ -66,6 +66,14 @@ static t_token_type	scan_for_word(char *input, size_t *length)
 	return (TK_ERROR);
 }
 
+static t_token_type	scan_for_env(char *input, size_t *length)
+{
+	(*length)++;
+	while (ft_isalpha(input[*length]))
+		(*length)++;
+	return (TK_ENV);
+}
+
 static t_token_type scan_for_token_type(char *input, size_t *length)
 {
 	if (*input == '|')
@@ -96,8 +104,7 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 	// Read word/symbols after $
 	if (*input == '$')
 	{
-		(*length)++;
-		return (TK_ENV);
+		return (scan_for_env(input, length));
 	}
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
