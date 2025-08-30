@@ -45,6 +45,14 @@ typedef enum e_token_type
 		TK_ERROR
 }	t_token_type;
 
+typedef enum e_redir_type
+{
+	RD_FILE,
+	RD_FD,
+	RD_PIPE,
+	TK_HEREDOC
+}	t_redirs_type;
+
 typedef struct	s_token
 {
 		t_token_type	type;
@@ -53,15 +61,14 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
-    char    *infile_name;
-    char    *outfile_name;
-    char    *heredoc_delimiter;  // NEW: for << operator
-    char    *heredoc_content;    // NEW: store heredoc content
-		int			fds[2];
-    int     append_mode;         // for >>
-		int			is_pipe;
-    int     is_heredoc;          // NEW: flag to know if using heredoc
-}   t_redirs;
+	t_redirs_type	type;
+	char					*infile_name;
+	char					*outfile_name;
+	char					*heredoc_delimiter;  // NEW: for << operator
+	char					*heredoc_content;    // NEW: store heredoc content
+	int						fds[2];
+	int						append_mode;         // for >>
+}	t_redirs;
 
 // Fix s_cmd - missing struct keyword
 typedef struct s_cmd
@@ -70,6 +77,7 @@ typedef struct s_cmd
 	t_redirs				*redirs;
 	pid_t						pid;        // use pid_t instead of t_pid
 	int							is_builin;
+	int							exit_status;
 	struct s_cmd		*next;      // need 'struct' keyword
 }   t_cmd;
 
