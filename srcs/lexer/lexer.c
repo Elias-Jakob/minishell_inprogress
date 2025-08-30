@@ -74,13 +74,8 @@ static t_token_type	scan_for_env(char *input, size_t *length)
 	return (TK_ENV);
 }
 
-static t_token_type scan_for_token_type(char *input, size_t *length)
+static t_token_type	scan_for_redirect(char *input, size_t *length)
 {
-	if (*input == '|')
-	{
-		(*length)++;
-		return (TK_PIPE);
-	}
 	if (*input == '<')
 	{
 		(*length)++;
@@ -101,11 +96,20 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 		}
 		return (TK_REDIRECT_OUT);
 	}
-	// Read word/symbols after $
-	if (*input == '$')
+	return (TK_ERROR);
+}
+
+static t_token_type scan_for_token_type(char *input, size_t *length)
+{
+	if (*input == '|')
 	{
-		return (scan_for_env(input, length));
+		(*length)++;
+		return (TK_PIPE);
 	}
+	if (*input == '<' || *input == '>')
+		return (scan_for_redirect(input, length));
+	if (*input == '$')
+		return (scan_for_env(input, length));
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
 	if (ft_isalnum(*input))
