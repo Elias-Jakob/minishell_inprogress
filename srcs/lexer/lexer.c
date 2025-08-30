@@ -26,20 +26,45 @@ char *ft_strndup(const char *s1, size_t n)
 	return (s2);
 }
 
+static t_token_type	scan_for_quotes(char *input, size_t *length)
+{
+	if (*input == '"')
+	{
+		while (input[*length])
+		{
+			(*length)++;
+			if (input[*length] == '"')
+			{
+				(*length)++;
+				return (TK_DOUBLE_QUOTE);
+			}
+		}
+	}
+	else if (*input == '\'')
+	{
+		while (input[*length])
+		{
+			(*length)++;
+			if (input[*length] == '\'')
+			{
+				(*length)++;
+				return (TK_SINGLE_QUOTE);
+			}
+		}
+	}
+	return (TK_ERROR);
+}
+
 static t_token_type scan_for_token_type(char *input, size_t *length)
 {
-	(*length)++;
-	// Switch to alphanumerical
-	if (ft_isalpha(*input))
-	{
-		while (ft_isalpha(input[*length]))
-			(*length)++;
-		return (TK_WORD);
-	}
 	if (*input == '|')
+	{
+		(*length)++;
 		return (TK_PIPE);
+	}
 	if (*input == '<')
 	{
+		(*length)++;
 		if (*(input + 1) == '<')
 		{
 			(*length)++;
@@ -49,6 +74,7 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 	}
 	if (*input == '>')
 	{
+		(*length)++;
 		if (*(input + 1) == '>')
 		{
 			(*length)++;
@@ -58,14 +84,19 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 	}
 	// Read word/symbols after $
 	if (*input == '$')
+	{
+		(*length)++;
 		return (TK_ENV);
+	}
 	// Read until end of quote
-	if (*input == '"')
-		return (TK_DOUBLE_QUOTE);
-	// Read until end of quote
-	if (*input == '\'')
-		return (TK_SINGLE_QUOTE);
-	(*length)--;
+	if (*input == '"' || *input == '\'')
+		return (scan_for_quotes(input, length));
+	if (ft_isalnum(*input))
+	{
+		while (ft_isalpha(input[*length]))
+			(*length)++;
+		return (TK_WORD);
+	}
 	return (TK_ERROR);
 }
 
