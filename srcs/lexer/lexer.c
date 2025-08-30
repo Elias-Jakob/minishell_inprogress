@@ -55,6 +55,17 @@ static t_token_type	scan_for_quotes(char *input, size_t *length)
 	return (TK_ERROR);
 }
 
+static t_token_type	scan_for_word(char *input, size_t *length)
+{
+	while (input[*length])
+	{
+		(*length)++;
+		if (!ft_isalnum(input[*length]) || is_space(input[*length]))
+				return (TK_WORD);
+	}
+	return (TK_ERROR);
+}
+
 static t_token_type scan_for_token_type(char *input, size_t *length)
 {
 	if (*input == '|')
@@ -88,15 +99,10 @@ static t_token_type scan_for_token_type(char *input, size_t *length)
 		(*length)++;
 		return (TK_ENV);
 	}
-	// Read until end of quote
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
 	if (ft_isalnum(*input))
-	{
-		while (ft_isalpha(input[*length]))
-			(*length)++;
-		return (TK_WORD);
-	}
+		return (scan_for_word(input, length));
 	return (TK_ERROR);
 }
 
@@ -126,12 +132,18 @@ int lexer(char *input, t_list **token_list)
 		length = 0;
 		if (!is_space(input[i]))
 		{
-			// If error log it and stop creation of token
 			type = scan_for_token_type(input + i, &length);
-			token = create_token(type, input + i, length);
-			new_tok = ft_lstnew((void *)token);
-			// If is NULL don't add
-			ft_lstadd_back(token_list, new_tok);
+			if (type == TK_ERROR)
+			{
+				printf("Error: Scanning for token type\n");
+				token = NULL;
+			}
+			else
+			{
+				token = create_token(type, input + i, length);
+				new_tok = ft_lstnew((void *)token);
+				ft_lstadd_back(token_list, new_tok);
+			}
 		}
 		else
 			length++;
