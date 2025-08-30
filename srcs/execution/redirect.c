@@ -2,111 +2,65 @@
 
 // heredoc ?
 
-static void	redirect_in(t_data *data, int fds[2])
+void	set_in_fd(t_cmd *command, t_redirs *redirs)
 {
-	int	input_fd;
-
-	if (data->i == 2)
+	if ((redirs->type == RD_FILE
+		|| redirs->type == RD_APPEND) && redirs->infile_name)
 	{
-		input_fd = open(data->argv[1], O_RDONLY);
-		if (input_fd == -1)
-		{
-			perror(data->argv[1]);
-			if (close(fds[0]) == -1
-				|| close(fds[1]) == -1)
-				perror("close failed");
-			exit(1);
-		}
-	}
-	else
-		input_fd = fds[0];
-	if (dup2(input_fd, 0) == -1)
-		error_and_exit("dup2 failed", 1);
-	if (close(input_fd) == -1)
-		error_and_exit("close failed", 1);
-}
-
-static void	redirect_out(t_data *data, int fds[2])
-{
-	int	output_fd;
-	int	oflag;
-
-	if (data->i == data->argc - 2)
-	{
-		oflag = O_WRONLY | O_CREAT | O_TRUNC;
-		output_fd = open(data->argv[data->argc - 1], oflag, 0644);
-		if (output_fd == -1)
-			error_and_exit(data->argv[data->argc - 1], 1);
-	}
-	else
-		output_fd = fds[1];
-	if (dup2(output_fd, 1) == -1)
-		error_and_exit("dup2 failed", 1);
-	if (close(output_fd) == -1)
-		error_and_exit("close failed", 1);
-}
-
-void	redirect_in(t_cmd *command, t_redirs *redirs)
-{
-	if (redirs->in_file)
-	{
-		redirs->fds[0] = open(redirs->in_file, O_RDONLY);
+		redirs->fds[0] = open(redirs->infile_name, O_RDONLY);
 		// TODO: check if files exists & and we have the right permissions
 		if (redirs->fds[0] == -1)
-		{
-			perror(command->argv[0]);
-			exit(1);
-		}
+			error_and_exit(command->argv[0], 1);
 	}
-	if (dup2(redirs->fds[0], STDIN_FILENO) == -1)
-	{
-		perror("dup2 failed");
-		eixt(1);
-	}
-	// checks if the in is a pipe and if so closes it
-	// really??
-	if (redirs->is_pipe && close(redirs->in_fd[0]) == -1)
-	{
-		perror("close failed");
-		exit(1);
-	}
+	else if (redirs->type == RD_FD && redirs->infile_name)
+		redirs->fds[0] = ft_atoi(redirs->infile_name);
+	// TODO: Implement heredoc
+	else if (redirs->type == RD_HEREDOC)
+		;
 }
 
-void	redirect_out(t_cmd *command, t_redirs *redirs)
+void	set_out_fd(t_cmd *command, t_redirs *redirs)
 {
 	int	oflag;
-	// TODO: if pipe then set in_fd of the next command to read end of the pipe
-	if (redirs->is_pipe && command->next)
+	int	pipe_fds[2];
+
+	if (redirs->outfile_name)
 	{
-		if (pipe(fds) == -1)
-		{
-			perror("pipe failed");
-			exit(1);
-		}
-	}
-	if (redirs->out_file)
-	{
-		if (redirs->append_mode)
+		oflag = O_WRONLY | O_CREAT | O_TRUNC;
+		if (redirs->type == RD_APPEND)
 			oflag = O_WRONLY | O_CREAT | O_APPEND;
-		else
-			oflag = O_WRONLY | O_CREAT | O_TRUNC;
-		redirs->fds[1] = open(redirs->in_file, oflag);
+		redirs->fds[1] = open(redirs->outfile_name, oflag, 0644);
 		if (redirs->fds[1] == -1)
-		{
-			perror(command->argv[0]);
-			exit(1);
-		}
+			error_and_exit(command->argv[0], 1);
 	}
-	if (dup2(redirs->fds[1], STDOUT_FILENO) == -1)
+	else if (redirs->type == RD_FD && redirs->outfile_name)
+		redirs->fds[1] = ft_atoi(redirs->outfile_name);
+	else if (redirs->type == RD_PIPE)
 	{
-		perror("dup2 failed");
-		exit(1);
+		if (pipe(pipe_fds) == -1)
+			error_and_exit("pipe failed", 1);
+		redirs->fds[1] = pipe_fds[1];
+		if (command->next)
+			command->next->redirs->fds[0] = pipe_fds[0];
 	}
-	if (close(fds[1]) == -1)
-	{
-		perror("close failed");
-		exit(1);
-	}
+	else if (redirs->type == RD_HEREDOC)
+		;
 }
 
-
+void	setup_redirections(t_redirs *redirs)
+{
+	if (redirs->fds[0] != STDIN_FILENO)
+	{
+		if (dup2(redirs->fds[0], STDIN_FILENO) == -1)
+			error_and_exit("dup2 failed", 1);
+		if (close(redirs->fds[0]) == -1)
+			error_and_exit("close failed", 1);
+	}
+	if (redirs->fds[1] != STDOUT_FILENO)
+	{
+		if (dup2(redirs->fds[1], STDOUT_FILENO) == -1)
+			error_and_exit("dup2 failed", 1);
+		if (close(redirs->fds[1]) == -1)
+			error_and_exit("close failed", 1);
+	}
+}

@@ -1,5 +1,5 @@
 NAME = minishell
-SRCS = srcs/bby_shell.c srcs/lexer/lexer.c
+SRCS = srcs/bby_shell.c srcs/lexer/lexer.c srcs/execution/execute.c srcs/execution/pipeline.c srcs/execution/redirect.c srcs/utils/clean_up.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a

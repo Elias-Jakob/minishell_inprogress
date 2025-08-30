@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -48,9 +55,10 @@ typedef enum e_token_type
 typedef enum e_redir_type
 {
 	RD_FILE,
+	RD_APPEND,
 	RD_FD,
 	RD_PIPE,
-	TK_HEREDOC
+	RD_HEREDOC
 }	t_redirs_type;
 
 typedef struct	s_token
@@ -76,7 +84,7 @@ typedef struct s_cmd
 	char						**argv;
 	t_redirs				*redirs;
 	pid_t						pid;        // use pid_t instead of t_pid
-	int							is_builin;
+	int							is_builtin;
 	int							exit_status;
 	struct s_cmd		*next;      // need 'struct' keyword
 }   t_cmd;
@@ -102,5 +110,23 @@ typedef struct s_exec_context
 }   t_exec_context;
 
 int	lexer(char *input, t_list **token_list);
+
+// EXECUTION PART
+
+// execution/pipeline.c
+void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context);
+
+// execution/execute.c
+int	exec_builtin(
+	t_pipeline *pipeline, t_exec_context *exec_context, t_cmd *builtin);
+int	exec_command(t_exec_context *exec_context, t_cmd *command);
+
+// execution/redirect.c
+void	setup_redirections(t_redirs *redirs);
+void	set_in_fd(t_cmd *command, t_redirs *redirs);
+void	set_out_fd(t_cmd *command, t_redirs *redirs);
+
+// utils/clean_up.c
+void	error_and_exit(char *err_msg, int exit_status);
 
 #endif
