@@ -68,6 +68,7 @@ int	main(int argc, char **argv, char **envp)
 		(void)print_token;
 		exec_context.envp = envp;
 		exec_context.paths = getenv("PATH");
+		(void)exec_context;
 		token_list = ft_lstnew(NULL);
 		// using_history();
 		// stifle_history(3); trouve et lance la commande.
