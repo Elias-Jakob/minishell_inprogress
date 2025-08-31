@@ -96,7 +96,8 @@ typedef struct s_exec_context
 }   t_exec_context;
 
 int	lexer(char *input, t_list **token_list);
-int	parser(t_list *token_list, t_list **cmd_list);
+// int	parser(t_list *token_list, t_list **cmd_list);
+int parser(t_list *token_list, t_cmd **cmd_head);
 
 // EXECUTION PART
 

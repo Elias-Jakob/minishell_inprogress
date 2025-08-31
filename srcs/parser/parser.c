@@ -1,14 +1,36 @@
 #include "../../includes/minishell.h"
 
-int	is_token_redirect(t_token_type type)
+int is_token_redirect(t_token_type type)
 {
-	return (type == TK_REDIRECT_IN || type == TK_REDIRECT_OUT
-			|| type == TK_HEREDOC || type == TK_APPEND_OUT || type == TK_PIPE);
+    return (type == TK_REDIRECT_IN || type == TK_REDIRECT_OUT
+            || type == TK_HEREDOC || type == TK_APPEND_OUT || type == TK_PIPE);
 }
 
-int	is_token_word(t_token_type type)
+int is_token_word(t_token_type type)
 {
-	return (type == TK_WORD || type == TK_DOUBLE_QUOTE);
+    return (type == TK_WORD || type == TK_DOUBLE_QUOTE);
+}
+
+static void append_cmd(t_cmd **head, t_cmd *new_cmd)
+{
+    if (!*head)
+        *head = new_cmd;
+    else
+    {
+        t_cmd *last = *head;
+        while (last->next)
+            last = last->next;
+        last->next = new_cmd;
+    }
+}
+
+static void init_redirs_if_needed(t_cmd *cmd)
+{
+    if (!cmd->redirs)
+    {
+        cmd->redirs = malloc(sizeof(t_redirs));
+        ft_memset(cmd->redirs, 0, sizeof(t_redirs));
+    }
 }
 
 static int get_argv_amount(t_list *start)
@@ -19,65 +41,23 @@ static int get_argv_amount(t_list *start)
 
     while (current)
     {
-		token = (t_token *)current->content;
+        token = (t_token *)current->content;
         if (!token)
             break;
         if (is_token_word(token->type))
-			count++;
-		else if (is_token_redirect(token->type))
-			current = current->next;
+            count++;
+        else if (is_token_redirect(token->type))
+            current = current->next;
         current = current->next;
     }
     return (count);
 }
-//
-// int parser(t_list *token_list, t_list **cmd_list)
-// {
-//     t_list  *current = token_list;
-//     t_token *token;
-//     t_cmd   cmd;
-//     int     arg_amount;
-//
-//     while (current)
-//     {
-//         arg_amount = get_argv_amount(current);
-//         if (arg_amount <= 0)
-//         {
-//             current = current->next;
-//             continue;
-//         }
-//         cmd.argv = malloc(sizeof(char *) * (arg_amount + 1));
-//         if (!cmd.argv)
-//             return (EXIT_FAILURE);
-//         int i = 0;
-//         while (i < arg_amount && current)
-//         {
-//             token = (t_token *)current->content;
-//             if (!token || !token->value)
-//                 break;
-//
-//             cmd.argv[i] = ft_strdup(token->value);
-//             current = current->next;
-//             i++;
-//         }
-//         cmd.argv[i] = NULL;
-//         t_cmd *new_cmd = malloc(sizeof(t_cmd));
-//                if (!new_cmd)
-//                        return (EXIT_FAILURE);
-//         new_cmd->argv = cmd.argv;
-//         t_list *new = ft_lstnew(new_cmd);
-//                if (!new)
-//                        return (EXIT_FAILURE);
-//         ft_lstadd_back(cmd_list, new);
-//     }
-//     return (EXIT_SUCCESS);
-// }
 
-void	add_argv_from_token(t_cmd *cmd, t_token *token, int index)
+void add_argv_from_token(t_cmd *cmd, t_token *token, int index)
 {
-	if (!cmd || !token || !token->value)
-		return ;
-	cmd->argv[index] = ft_strdup(token->value);
+    if (!cmd || !token || !token->value)
+        return ;
+    cmd->argv[index] = ft_strdup(token->value);
 }
 
 t_list *parse_redirection(t_cmd *cmd, t_list *current)
@@ -94,7 +74,7 @@ t_list *parse_redirection(t_cmd *cmd, t_list *current)
     if (token->type == TK_PIPE)
     {
         cmd->redirs->out_type = RD_PIPE;
-        return current->next; // pipe termine cette commande
+        return current->next;
     }
     current = current->next;
     if (!current || !current->content)
@@ -123,7 +103,7 @@ t_list *parse_redirection(t_cmd *cmd, t_list *current)
     return current->next;
 }
 
-int parse_command(t_list **current_tk_list, t_list **cmd_list)
+int parse_command(t_list **current_tk_list, t_cmd **cmd_head, int pipe_in)
 {
     t_list  *current = *current_tk_list;
     t_token *token;
@@ -131,6 +111,12 @@ int parse_command(t_list **current_tk_list, t_list **cmd_list)
     int     argv_count, i;
 
     ft_memset(&cmd, 0, sizeof(t_cmd));
+    if (pipe_in)
+    {
+        init_redirs_if_needed(&cmd);
+        cmd.redirs->in_type = RD_PIPE;
+    }
+
     argv_count = get_argv_amount(current);
     if (argv_count > 0)
     {
@@ -154,14 +140,19 @@ int parse_command(t_list **current_tk_list, t_list **cmd_list)
             t_list *next = parse_redirection(&cmd, current);
             if (token->type == TK_PIPE)
             {
+                init_redirs_if_needed(&cmd);
+                cmd.redirs->out_type = RD_PIPE;
                 if (cmd.argv)
                     cmd.argv[i] = NULL;
+
                 t_cmd *new_cmd = malloc(sizeof(t_cmd));
                 *new_cmd = cmd;
-                t_list *new_node = ft_lstnew(new_cmd);
-                ft_lstadd_back(cmd_list, new_node);
+                new_cmd->next = NULL;
+                append_cmd(cmd_head, new_cmd);
+
                 *current_tk_list = next;
-                return EXIT_SUCCESS;
+                // relancer en précisant que la prochaine commande a un in_type = PIPE
+                return parse_command(current_tk_list, cmd_head, 1);
             }
             current = next;
         }
@@ -174,17 +165,17 @@ int parse_command(t_list **current_tk_list, t_list **cmd_list)
     {
         t_cmd *new_cmd = malloc(sizeof(t_cmd));
         *new_cmd = cmd;
-        t_list *new_node = ft_lstnew(new_cmd);
-        ft_lstadd_back(cmd_list, new_node);
+        new_cmd->next = NULL;
+        append_cmd(cmd_head, new_cmd);
     }
     *current_tk_list = current;
-    return EXIT_SUCCESS;
+    return (EXIT_SUCCESS);
 }
 
-int parser(t_list *token_list, t_list **cmd_list)
+int parser(t_list *token_list, t_cmd **cmd_head)
 {
     t_list *current = token_list;
     while (current)
-        parse_command(&current, cmd_list);
+        parse_command(&current, cmd_head, 0);
     return EXIT_SUCCESS;
 }
