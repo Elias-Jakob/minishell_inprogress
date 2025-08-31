@@ -33,23 +33,26 @@ typedef enum e_builtin
 
 typedef enum e_token_type
 {
-		TK_WORD,
-		TK_PIPE,
-		TK_REDIRECT_IN,
-		TK_REDIRECT_OUT,
-		TK_APPEND_OUT,
-		TK_SINGLE_QUOTE,
-		TK_DOUBLE_QUOTE,
-		TK_HEREDOC,
-		TK_ENV,
-		TK_ERROR
+	TK_WORD,
+	TK_PIPE,
+	TK_REDIRECT_IN,
+	TK_REDIRECT_OUT,
+	TK_APPEND_OUT,
+	TK_SINGLE_QUOTE,
+	TK_DOUBLE_QUOTE,
+	TK_HEREDOC,
+	TK_ENV,
+	TK_ERROR
 }	t_token_type;
 
 typedef enum e_redir_type
 {
+	RD_STD,
 	RD_FILE,
+	RD_APPEND_OUT,
 	RD_FD,
 	RD_PIPE,
+	RD_HEREDOC
 }	t_redirs_type;
 
 typedef struct	s_token
@@ -60,7 +63,8 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
-	t_redirs_type	type;
+	t_redirs_type	in_type;
+	t_redirs_type	out_type;
 	char					*infile_name;
 	char					*outfile_name;
 	char					*heredoc_delimiter;  // NEW: for << operator
@@ -75,32 +79,40 @@ typedef struct s_cmd
 	char						**argv;
 	t_redirs				*redirs;
 	pid_t						pid;        // use pid_t instead of t_pid
-	int							is_builin;
+	int							is_builtin;
 	int							exit_status;
 	struct s_cmd		*next;      // need 'struct' keyword
 }   t_cmd;
 
-// Add missing fields to t_pipeline
-typedef struct s_pipeline
-{
-    t_cmd		*commands;
-    int			*pipes_fds;
-    pid_t		*pids;              // use pid_t
-    int			cmd_count;          // NEW: how many commands?
-    int			pipe_count;         // NEW: how many pipes? (cmd_count - 1)
-}   t_pipeline;
-
-// Expand exec_context with essentials
 typedef struct s_exec_context
 {
-    char    **envp;
-    char    *paths;
-    int     exit_status;
-    int     stdin_backup;       // NEW: to restore stdin after redirections
-    int     stdout_backup;      // NEW: to restore stdout after redirections
+	char				**envp;
+	char				*paths;
+	char				*prompt;
+	t_cmd				*commands;
+	int					exit_status;
+	int					stdin_backup;       // NEW: to restore stdin after redirections
+	int					stdout_backup;      // NEW: to restore stdout after redirections
 }   t_exec_context;
 
 int	lexer(char *input, t_list **token_list);
 int	parser(t_list *token_list, t_list **cmd_list);
+
+// EXECUTION PART
+
+// execution/pipeline.c
+// void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context);
+//
+// // execution/execute.c
+// int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
+// int	exec_command(t_exec_context *exec_context, t_cmd *command);
+//
+// // execution/redirect.c
+// void	setup_redirections(t_redirs *redirs);
+// void	set_in_fd(t_cmd *command, t_redirs *redirs);
+// void	set_out_fd(t_cmd *command, t_redirs *redirs);
+//
+// // utils/clean_up.c
+// void	error_and_exit(char *err_msg, int exit_status);
 
 #endif
