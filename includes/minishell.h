@@ -95,6 +95,18 @@ typedef struct s_exec_context
 	int					stdout_backup;      // NEW: to restore stdout after redirections
 }   t_exec_context;
 
+
+// lexer utils
+int is_space(char c);
+char *ft_strndup(const char *s1, size_t n);
+
+// lexer scan_token
+t_token_type	scan_for_quotes(char *input, size_t *length);
+t_token_type	scan_for_word(char *input, size_t *length);
+t_token_type	scan_for_env(char *input, size_t *length);
+t_token_type	scan_for_redirect(char *input, size_t *length);
+t_token_type scan_for_token_type(char *input, size_t *length);
+
 int	lexer(char *input, t_list **token_list);
 // int	parser(t_list *token_list, t_list **cmd_list);
 int parser(t_list *token_list, t_cmd **cmd_head);
