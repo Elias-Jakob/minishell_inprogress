@@ -65,38 +65,56 @@ int	main(int argc, char **argv, char **envp)
 	t_exec_context	exec_context;
 	t_pipeline			pipeline;
 	t_cmd						test_cmd;
+	t_cmd						test_cmd2;
+	t_cmd						test_cmd3;
 	t_redirs				cmd_redirs;
+	t_redirs				cmd_redirs2;
+	t_redirs				cmd_redirs3;
 
 	(void)argc;
 	(void)argv;
 	exec_context.envp = envp;
 	exec_context.paths = getenv("PATH");
-	// ls example
-	// cmd_redirs.infile_name = NULL;
-	// cmd_redirs.outfile_name = ft_strdup("outfile.txt");
-	// cmd_redirs.type = RD_FILE;
-	// cmd_redirs.append_mode = 0;
-	// test_cmd.argv = ft_split("ls", ' ');
-	// test_cmd.is_builtin = 0;
-	// test_cmd.redirs = &cmd_redirs;
-	// test_cmd.next = NULL;
-	// pipeline.commands = &test_cmd;
+	exec_context.prompt = NULL;
 
 	// cat example
-	cmd_redirs.infile_name = ft_strdup("infile");
-	cmd_redirs.outfile_name = ft_strdup("outfile.txt");
-	cmd_redirs.type = RD_FILE;
+	cmd_redirs2.infile_name = NULL;
+	cmd_redirs2.outfile_name = ft_strdup("outfile.txt");
+	cmd_redirs2.in_type = RD_PIPE;
+	cmd_redirs2.out_type = RD_FILE;
+	cmd_redirs2.fds[0] = STDIN_FILENO;
+	cmd_redirs2.fds[1] = STDOUT_FILENO;
+	test_cmd2.argv = ft_split("wc", ' ');
+	test_cmd2.is_builtin = 0;
+	test_cmd2.redirs = &cmd_redirs2;
+	test_cmd2.next = NULL;
+
+// ls example
+	cmd_redirs3.infile_name = NULL;
+	cmd_redirs3.outfile_name = NULL;
+	cmd_redirs3.in_type = RD_PIPE;
+	cmd_redirs3.out_type = RD_PIPE;
+	cmd_redirs3.fds[0] = STDIN_FILENO;
+	cmd_redirs3.fds[1] = STDOUT_FILENO;
+	test_cmd3.argv = ft_split("cat", ' ');
+	test_cmd3.is_builtin = 0;
+	test_cmd3.redirs = &cmd_redirs3;
+	test_cmd3.next = &test_cmd2;
+
+
+	cmd_redirs.infile_name = ft_strdup("big_text.txt");
+	cmd_redirs.outfile_name = NULL;
+	cmd_redirs.in_type = RD_FILE;
+	cmd_redirs.out_type = RD_PIPE;
 	cmd_redirs.fds[0] = STDIN_FILENO;
 	cmd_redirs.fds[1] = STDOUT_FILENO;
-	test_cmd.argv = ft_split("cat -e", ' ');
+	test_cmd.argv = ft_split("cat", ' ');
 	test_cmd.is_builtin = 0;
 	test_cmd.redirs = &cmd_redirs;
-	test_cmd.next = NULL;
+	test_cmd.next = &test_cmd3;
+
 	pipeline.commands = &test_cmd;
-	// pipeline.cmd_count = 1;
-	// pipeline.pids = (int *)malloc(sizeof(int) * pipeline.cmd_count);
-	// if (!pipeline.pids)
-	// 	exit_and_error("malloc failed", 1);
-	run_pipeline(&pipeline, &exec_context);
+	exec_context.pipeline = &pipeline;
+	run_pipeline(&exec_context);
 	return (EXIT_SUCCESS);
 }

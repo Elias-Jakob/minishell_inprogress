@@ -69,10 +69,8 @@ static char	*look_up_cmdpath(char *cmd, char *paths)
 	return (find_executable(cmd, bin_dirs));
 }
 
-int	exec_builtin(
-	t_pipeline *pipeline, t_exec_context *exec_context, t_cmd *builtin)
+int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 {
-	(void)pipeline;
 	(void)exec_context;
 	(void)builtin;
 	// 1. make redirs

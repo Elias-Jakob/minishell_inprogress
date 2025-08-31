@@ -6,13 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <errno.h>
-
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -54,12 +47,10 @@ typedef enum e_token_type
 
 typedef enum e_redir_type
 {
-	RD_STD,
 	RD_FILE,
-	RD_APPEND_OUT,
 	RD_FD,
 	RD_PIPE,
-	RD_HEREDOC
+	TK_HEREDOC
 }	t_redirs_type;
 
 typedef struct	s_token
@@ -70,13 +61,13 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
-	t_redirs_type	in_type;
-	t_redirs_type	out_type;
+	t_redirs_type	type;
 	char					*infile_name;
 	char					*outfile_name;
 	char					*heredoc_delimiter;  // NEW: for << operator
 	char					*heredoc_content;    // NEW: store heredoc content
 	int						fds[2];
+	int						append_mode;         // for >>
 }	t_redirs;
 
 // Fix s_cmd - missing struct keyword

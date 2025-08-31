@@ -4,18 +4,18 @@
 
 void	set_in_fd(t_cmd *command, t_redirs *redirs)
 {
-	if ((redirs->type == RD_FILE
-		|| redirs->type == RD_APPEND) && redirs->infile_name)
+	if ((redirs->in_type == RD_FILE
+		|| redirs->in_type == RD_APPEND) && redirs->infile_name)
 	{
 		redirs->fds[0] = open(redirs->infile_name, O_RDONLY);
 		// TODO: check if files exists & and we have the right permissions
 		if (redirs->fds[0] == -1)
 			error_and_exit(command->argv[0], 1);
 	}
-	else if (redirs->type == RD_FD && redirs->infile_name)
+	else if (redirs->in_type == RD_FD && redirs->infile_name)
 		redirs->fds[0] = ft_atoi(redirs->infile_name);
 	// TODO: Implement heredoc
-	else if (redirs->type == RD_HEREDOC)
+	else if (redirs->in_type == RD_HEREDOC)
 		;
 }
 
@@ -24,18 +24,19 @@ void	set_out_fd(t_cmd *command, t_redirs *redirs)
 	int	oflag;
 	int	pipe_fds[2];
 
-	if (redirs->outfile_name)
+	if ((redirs->out_type == RD_FILE
+		|| redirs->out_type == RD_APPEND) && redirs->outfile_name)
 	{
 		oflag = O_WRONLY | O_CREAT | O_TRUNC;
-		if (redirs->type == RD_APPEND)
+		if (redirs->out_type == RD_APPEND)
 			oflag = O_WRONLY | O_CREAT | O_APPEND;
 		redirs->fds[1] = open(redirs->outfile_name, oflag, 0644);
 		if (redirs->fds[1] == -1)
 			error_and_exit(command->argv[0], 1);
 	}
-	else if (redirs->type == RD_FD && redirs->outfile_name)
+	else if (redirs->out_type == RD_FD && redirs->outfile_name)
 		redirs->fds[1] = ft_atoi(redirs->outfile_name);
-	else if (redirs->type == RD_PIPE)
+	else if (redirs->out_type == RD_PIPE)
 	{
 		if (pipe(pipe_fds) == -1)
 			error_and_exit("pipe failed", 1);
@@ -43,7 +44,7 @@ void	set_out_fd(t_cmd *command, t_redirs *redirs)
 		if (command->next)
 			command->next->redirs->fds[0] = pipe_fds[0];
 	}
-	else if (redirs->type == RD_HEREDOC)
+	else if (redirs->out_type == RD_HEREDOC)
 		;
 }
 

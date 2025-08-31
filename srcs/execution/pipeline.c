@@ -41,7 +41,7 @@ static void	wait_on_children(
 	exec_context->exit_status = last_cmd->exit_status;
 }
 
-void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context)
+void	run_pipeline(t_exec_context *exec_context)
 {
 	t_cmd	*current_cmd;
 
@@ -49,11 +49,13 @@ void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context)
 	while (current_cmd)
 	{
 		if (current_cmd->is_builtin)
-			exec_builtin(pipeline, exec_context, current_cmd);
+			exec_builtin(exec_context, current_cmd);
 		else
 			exec_command(exec_context, current_cmd);
 		current_cmd = current_cmd->next;
 	}
 	// wait for all processes
-	wait_on_children(pipeline, exec_context);
+	wait_on_children(exec_context->pipeline, exec_context);
+	// return exit status
+	// clean up the pipeline
 }
