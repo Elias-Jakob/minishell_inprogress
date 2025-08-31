@@ -1,58 +1,5 @@
 #include "../../includes/minishell.h"
 
-int is_token_redirect(t_token_type type)
-{
-    return (type == TK_REDIRECT_IN || type == TK_REDIRECT_OUT
-            || type == TK_HEREDOC || type == TK_APPEND_OUT || type == TK_PIPE);
-}
-
-int is_token_word(t_token_type type)
-{
-    return (type == TK_WORD || type == TK_DOUBLE_QUOTE);
-}
-
-static void append_cmd(t_cmd **head, t_cmd *new_cmd)
-{
-    if (!*head)
-        *head = new_cmd;
-    else
-    {
-        t_cmd *last = *head;
-        while (last->next)
-            last = last->next;
-        last->next = new_cmd;
-    }
-}
-
-static void init_redirs_if_needed(t_cmd *cmd)
-{
-    if (!cmd->redirs)
-    {
-        cmd->redirs = malloc(sizeof(t_redirs));
-        ft_memset(cmd->redirs, 0, sizeof(t_redirs));
-    }
-}
-
-static int get_argv_amount(t_list *start)
-{
-    t_list  *current = start;
-    t_token *token;
-    int     count = 0;
-
-    while (current)
-    {
-        token = (t_token *)current->content;
-        if (!token)
-            break;
-        if (is_token_word(token->type))
-            count++;
-        else if (is_token_redirect(token->type))
-            current = current->next;
-        current = current->next;
-    }
-    return (count);
-}
-
 void add_argv_from_token(t_cmd *cmd, t_token *token, int index)
 {
     if (!cmd || !token || !token->value)
@@ -60,26 +7,11 @@ void add_argv_from_token(t_cmd *cmd, t_token *token, int index)
     cmd->argv[index] = ft_strdup(token->value);
 }
 
-t_list *parse_redirection(t_cmd *cmd, t_list *current)
+t_list	*set_cmd_redirection(t_list *current, t_token *token)
 {
-    t_token *token = (t_token *)current->content;
+	t_token	*file_token;
 
-    if (!cmd || !current)
-        return current;
-    if (!cmd->redirs)
-    {
-        cmd->redirs = malloc(sizeof(t_redirs));
-        ft_memset(cmd->redirs, 0, sizeof(t_redirs));
-    }
-    if (token->type == TK_PIPE)
-    {
-        cmd->redirs->out_type = RD_PIPE;
-        return current->next;
-    }
-    current = current->next;
-    if (!current || !current->content)
-        return current;
-    t_token *file_token = (t_token *)current->content;
+    file_token = (t_token *)current->content;
     if (token->type == TK_REDIRECT_IN)
     {
         cmd->redirs->infile_name = ft_strdup(file_token->value);
@@ -101,6 +33,28 @@ t_list *parse_redirection(t_cmd *cmd, t_list *current)
         cmd->redirs->out_type = RD_HEREDOC;
     }
     return current->next;
+}
+
+t_list *parse_redirection(t_cmd *cmd, t_list *current)
+{
+    t_token *token;
+
+	token = (t_token *)current->content;
+    if (!cmd || !current)
+        return current;
+    if (!cmd->redirs)
+    {
+        cmd->redirs = malloc(sizeof(t_redirs));
+        ft_memset(cmd->redirs, 0, sizeof(t_redirs));
+    }
+    if (token->type == TK_PIPE)
+    {
+        cmd->redirs->out_type = RD_PIPE;
+        return (current->next);
+    }
+    current = current->next;
+    if (!current || !current->content)
+        return current;
 }
 
 int parse_command(t_list **current_tk_list, t_cmd **cmd_head, int pipe_in)
