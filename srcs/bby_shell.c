@@ -63,13 +63,12 @@ int	main(int argc, char **argv, char **envp)
 		// return (EXIT_SUCCESS);
 	// char						*line;
 	t_exec_context	exec_context;
-	t_pipeline			pipeline;
-	t_cmd						test_cmd;
-	t_cmd						test_cmd2;
-	t_cmd						test_cmd3;
-	t_redirs				cmd_redirs;
-	t_redirs				cmd_redirs2;
-	t_redirs				cmd_redirs3;
+	t_cmd						*test_cmd = (t_cmd *)malloc(sizeof(t_cmd *));
+	t_cmd						*test_cmd2 = (t_cmd *)malloc(sizeof(t_cmd *));
+	t_cmd						*test_cmd3 = (t_cmd *)malloc(sizeof(t_cmd *));
+	t_redirs				*cmd_redirs = (t_redirs *)malloc(sizeof(t_redirs *));
+	t_redirs				*cmd_redirs2 = (t_redirs *)malloc(sizeof(t_redirs *));
+	t_redirs				*cmd_redirs3 = (t_redirs *)malloc(sizeof(t_redirs *));
 
 	(void)argc;
 	(void)argv;
@@ -78,43 +77,43 @@ int	main(int argc, char **argv, char **envp)
 	exec_context.prompt = NULL;
 
 	// cat example
-	cmd_redirs2.infile_name = NULL;
-	cmd_redirs2.outfile_name = ft_strdup("outfile.txt");
-	cmd_redirs2.in_type = RD_PIPE;
-	cmd_redirs2.out_type = RD_FILE;
-	cmd_redirs2.fds[0] = STDIN_FILENO;
-	cmd_redirs2.fds[1] = STDOUT_FILENO;
-	test_cmd2.argv = ft_split("wc", ' ');
-	test_cmd2.is_builtin = 0;
-	test_cmd2.redirs = &cmd_redirs2;
-	test_cmd2.next = NULL;
+	cmd_redirs2->infile_name = NULL;
+	cmd_redirs2->outfile_name = ft_strdup("outfile.txt");
+	cmd_redirs2->in_type = RD_PIPE;
+	cmd_redirs2->out_type = RD_FILE;
+	cmd_redirs2->fds[0] = STDIN_FILENO;
+	cmd_redirs2->fds[1] = STDOUT_FILENO;
+	test_cmd2->argv = ft_split("cat", ' ');
+	test_cmd2->is_builtin = 0;
+	test_cmd2->redirs = &cmd_redirs2;
+	test_cmd2->next = NULL;
 
 // ls example
-	cmd_redirs3.infile_name = NULL;
-	cmd_redirs3.outfile_name = NULL;
-	cmd_redirs3.in_type = RD_PIPE;
-	cmd_redirs3.out_type = RD_PIPE;
-	cmd_redirs3.fds[0] = STDIN_FILENO;
-	cmd_redirs3.fds[1] = STDOUT_FILENO;
-	test_cmd3.argv = ft_split("cat", ' ');
-	test_cmd3.is_builtin = 0;
-	test_cmd3.redirs = &cmd_redirs3;
-	test_cmd3.next = &test_cmd2;
+	cmd_redirs3->infile_name = NULL;
+	cmd_redirs3->outfile_name = NULL;
+	cmd_redirs3->in_type = RD_PIPE;
+	cmd_redirs3->out_type = RD_PIPE;
+	cmd_redirs3->fds[0] = STDIN_FILENO;
+	cmd_redirs3->fds[1] = STDOUT_FILENO;
+	test_cmd3->argv = ft_split("cat", ' ');
+	test_cmd3->is_builtin = 0;
+	test_cmd3->redirs = &cmd_redirs3;
+	test_cmd3->next = &test_cmd2;
 
 
-	cmd_redirs.infile_name = ft_strdup("big_text.txt");
-	cmd_redirs.outfile_name = NULL;
-	cmd_redirs.in_type = RD_FILE;
-	cmd_redirs.out_type = RD_PIPE;
-	cmd_redirs.fds[0] = STDIN_FILENO;
-	cmd_redirs.fds[1] = STDOUT_FILENO;
-	test_cmd.argv = ft_split("cat", ' ');
-	test_cmd.is_builtin = 0;
-	test_cmd.redirs = &cmd_redirs;
-	test_cmd.next = &test_cmd3;
+	cmd_redirs->infile_name = ft_strdup("big_text.txt");
+	cmd_redirs->outfile_name = NULL;
+	cmd_redirs->in_type = RD_FILE;
+	cmd_redirs->out_type = RD_PIPE;
+	cmd_redirs->fds[0] = STDIN_FILENO;
+	cmd_redirs->fds[1] = STDOUT_FILENO;
+	test_cmd->argv = ft_split("cat", ' ');
+	test_cmd->is_builtin = 0;
+	test_cmd->redirs = &cmd_redirs;
+	test_cmd->next = &test_cmd3;
 
-	pipeline.commands = &test_cmd;
-	exec_context.pipeline = &pipeline;
-	run_pipeline(&exec_context);
+	exec_context.commands = test_cmd;
+	exec_command_list(&exec_context);
+	clean_up_commands(&exec_context);
 	return (EXIT_SUCCESS);
 }

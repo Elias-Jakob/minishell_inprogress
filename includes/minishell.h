@@ -6,6 +6,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -47,10 +53,12 @@ typedef enum e_token_type
 
 typedef enum e_redir_type
 {
+	RD_STD,
 	RD_FILE,
+	RD_APPEND_OUT,
 	RD_FD,
 	RD_PIPE,
-	TK_HEREDOC
+	RD_HEREDOC
 }	t_redirs_type;
 
 typedef struct	s_token
@@ -61,7 +69,8 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
-	t_redirs_type	type;
+	t_redirs_type	in_type;
+	t_redirs_type	out_type;
 	char					*infile_name;
 	char					*outfile_name;
 	char					*heredoc_delimiter;  // NEW: for << operator
@@ -97,7 +106,7 @@ int	lexer(char *input, t_list **token_list);
 // EXECUTION PART
 
 // execution/pipeline.c
-void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context);
+void	exec_command_list(t_exec_context *exec_context);
 
 // execution/execute.c
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
@@ -105,10 +114,17 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command);
 
 // execution/redirect.c
 void	setup_redirections(t_redirs *redirs);
-void	set_in_fd(t_cmd *command, t_redirs *redirs);
-void	set_out_fd(t_cmd *command, t_redirs *redirs);
+void	set_in_fd(
+	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
+void	set_out_fd(
+	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
 
 // utils/clean_up.c
+void	free_str_arr(char **arr);
+void	clean_up_commands(t_exec_context *exec_context);
+
+// utils/error_utils.c
+void	fatal_error(t_exec_context *exec_context, char *msg);
 void	error_and_exit(char *err_msg, int exit_status);
 
 #endif

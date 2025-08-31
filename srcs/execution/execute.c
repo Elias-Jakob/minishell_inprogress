@@ -1,17 +1,5 @@
 #include "../../includes/minishell.h"
 
-static void	free_str_arr(char **arr)
-{
-	size_t	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-		free(arr[i++]);
-	free(arr);
-}
-
 static char	*check_full_path(char *cmd)
 {
 	char	*pathname;
@@ -88,8 +76,8 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 	// 5. execve
 	if (command->redirs)
 	{
-		set_in_fd(command, command->redirs);
-		set_out_fd(command, command->redirs);
+		set_in_fd(exec_context, command, command->redirs);
+		set_out_fd(exec_context, command, command->redirs);
 	}
 	command->pid = fork();
 	if (command->pid == -1)
@@ -108,8 +96,8 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 	}
 	// parent (closing fds we dont need)
 	if (command->redirs->fds[0] != STDIN_FILENO && close(command->redirs->fds[0]) == -1)
-		error_and_exit("close failed", 1);
+		fatal_error(exec_context, "close failed");
 	if (command->redirs->fds[1] != STDOUT_FILENO && close(command->redirs->fds[1]) == -1)
-		error_and_exit("close failed", 1);
+		fatal_error(exec_context, "close failed");
 	return (command->pid);
 }
