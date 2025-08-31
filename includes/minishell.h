@@ -54,8 +54,9 @@ typedef enum e_token_type
 
 typedef enum e_redir_type
 {
+	RD_STD,
 	RD_FILE,
-	RD_APPEND,
+	RD_APPEND_OUT,
 	RD_FD,
 	RD_PIPE,
 	RD_HEREDOC
@@ -69,13 +70,13 @@ typedef struct	s_token
 
 typedef struct s_redirs
 {
-	t_redirs_type	type;
+	t_redirs_type	in_type;
+	t_redirs_type	out_type;
 	char					*infile_name;
 	char					*outfile_name;
 	char					*heredoc_delimiter;  // NEW: for << operator
 	char					*heredoc_content;    // NEW: store heredoc content
 	int						fds[2];
-	int						append_mode;         // for >>
 }	t_redirs;
 
 // Fix s_cmd - missing struct keyword
@@ -89,24 +90,15 @@ typedef struct s_cmd
 	struct s_cmd		*next;      // need 'struct' keyword
 }   t_cmd;
 
-// Add missing fields to t_pipeline
-typedef struct s_pipeline
-{
-    t_cmd		*commands;
-    int			*pipes_fds;
-    pid_t		*pids;              // use pid_t
-    int			cmd_count;          // NEW: how many commands?
-    int			pipe_count;         // NEW: how many pipes? (cmd_count - 1)
-}   t_pipeline;
-
-// Expand exec_context with essentials
 typedef struct s_exec_context
 {
-    char    **envp;
-    char    *paths;
-    int     exit_status;
-    int     stdin_backup;       // NEW: to restore stdin after redirections
-    int     stdout_backup;      // NEW: to restore stdout after redirections
+	char				**envp;
+	char				*paths;
+	char				*prompt;
+	t_cmd				*commands;
+	int					exit_status;
+	int					stdin_backup;       // NEW: to restore stdin after redirections
+	int					stdout_backup;      // NEW: to restore stdout after redirections
 }   t_exec_context;
 
 int	lexer(char *input, t_list **token_list);
@@ -117,8 +109,7 @@ int	lexer(char *input, t_list **token_list);
 void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context);
 
 // execution/execute.c
-int	exec_builtin(
-	t_pipeline *pipeline, t_exec_context *exec_context, t_cmd *builtin);
+int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
 int	exec_command(t_exec_context *exec_context, t_cmd *command);
 
 // execution/redirect.c
