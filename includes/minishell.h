@@ -6,6 +6,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -128,20 +134,25 @@ int parser(t_list *token_list, t_cmd **cmd_head);
 // ---------------------------------------- //
 
 // EXECUTION PART
+void	exec_command_list(t_exec_context *exec_context);
 
-// execution/pipeline.c
-// void	run_pipeline(t_pipeline *pipeline, t_exec_context *exec_context);
-//
-// // execution/execute.c
-// int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
-// int	exec_command(t_exec_context *exec_context, t_cmd *command);
-//
-// // execution/redirect.c
-// void	setup_redirections(t_redirs *redirs);
-// void	set_in_fd(t_cmd *command, t_redirs *redirs);
-// void	set_out_fd(t_cmd *command, t_redirs *redirs);
-//
-// // utils/clean_up.c
-// void	error_and_exit(char *err_msg, int exit_status);
+// execution/execute.c
+int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
+int	exec_command(t_exec_context *exec_context, t_cmd *command);
+
+// execution/redirect.c
+void	setup_redirections(t_redirs *redirs);
+void	set_in_fd(
+	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
+void	set_out_fd(
+	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
+
+// utils/clean_up.c
+void	free_str_arr(char **arr);
+void	clean_up_commands(t_exec_context *exec_context);
+
+// utils/error_utils.c
+void	fatal_error(t_exec_context *exec_context, char *msg);
+void	error_and_exit(char *err_msg, int exit_status);
 
 #endif

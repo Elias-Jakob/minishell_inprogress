@@ -1,10 +1,10 @@
 #include "../../includes/minishell.h"
 
-static void	set_exit_status(t_pipeline *pipeline, int finished_pid, int status)
+static void	set_cmd_exit_status(t_exec_context *exec_context, int finished_pid, int status)
 {
 	t_cmd	*current_cmd;
 
-	current_cmd = pipeline->commands;
+	current_cmd = exec_context->commands;
 	while (current_cmd)
 	{
 		if (current_cmd->pid == finished_pid)
@@ -16,23 +16,22 @@ static void	set_exit_status(t_pipeline *pipeline, int finished_pid, int status)
 		current_cmd->exit_status = WEXITSTATUS(status);
 }
 
-static void	wait_on_children(
-	t_pipeline *pipeline, t_exec_context *exec_context)
+static void	wait_on_children(t_exec_context *exec_context)
 {
 	int	status;
 	t_cmd	*current_cmd;
 	t_cmd	*last_cmd;
 	pid_t	finished_pid;
 
-	current_cmd = pipeline->commands;
+	current_cmd = exec_context->commands;
 	while (current_cmd)
 	{
 		if (current_cmd->is_builtin)
 		{
 			finished_pid = wait(&status);
 			if (finished_pid == -1)
-				error_and_exit("wait failed", 1);
-			set_exit_status(pipeline, finished_pid, status);
+				fatal_error(exec_context, "wait failed");
+			set_cmd_exit_status(exec_context, finished_pid, status);
 		}
 		if (!current_cmd->next)
 			last_cmd = current_cmd;
@@ -41,11 +40,11 @@ static void	wait_on_children(
 	exec_context->exit_status = last_cmd->exit_status;
 }
 
-void	run_pipeline(t_exec_context *exec_context)
+void	exec_command_list(t_exec_context *exec_context)
 {
 	t_cmd	*current_cmd;
 
-	current_cmd = pipeline->commands;
+	current_cmd = exec_context->commands;
 	while (current_cmd)
 	{
 		if (current_cmd->is_builtin)
@@ -55,7 +54,7 @@ void	run_pipeline(t_exec_context *exec_context)
 		current_cmd = current_cmd->next;
 	}
 	// wait for all processes
-	wait_on_children(exec_context->pipeline, exec_context);
+	wait_on_children(exec_context);
 	// return exit status
 	// clean up the pipeline
 }
