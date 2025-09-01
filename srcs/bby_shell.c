@@ -116,19 +116,30 @@ int	main(int argc, char **argv, char **envp)
 	// stifle_history(3); trouve et lance la commande.
 	token_list = NULL;
 	cmd_head = NULL;
-	while ((line = readline("$> ")) != NULL)
+	line = readline("$> ");
+	while (line != NULL)
 	{
 		token_list = NULL;
 		cmd_head = NULL;
 		if (lexer(line, &token_list))
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head);
-		debug_cmds(cmd_head, line);
+		ft_lstclear(&token_list, free_token);
+		(void)debug_cmds;
+		exec_context.commands = cmd_head;
+		exec_command_list(&exec_context);
+		clean_up_commands(&exec_context);
+		// sleep(10);
+		// debug_cmds(cmd_head, line);
 		add_history(line);
 		free(line);
-		ft_lstclear(&token_list, free_token);
 		token_list = NULL;
 		cmd_head = NULL;
+		line = readline("$> ");
+		// write(1, "\n", 1);
+		// rl_on_new_line();
+		// rl_replace_line("", 0);
+		// rl_redisplay();
 	}
 	clear_history();
 	return (EXIT_SUCCESS);

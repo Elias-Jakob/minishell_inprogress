@@ -75,15 +75,15 @@ t_list	*process_token(t_cmd *cmd, t_list *current, size_t *i, t_cmd **cmd_head)
 		return (current->next);
 	if (is_token_word(token->type))
 	{
-		printf("Handling word - ");
-		printf("cmd adress = %p\n", (void *)cmd);
+		// printf("Handling word - ");
+		// printf("cmd adress = %p\n", (void *)cmd);
 		handle_word(cmd, token, i);
 		return (current->next);
 	}
 	if (token->type == TK_PIPE)
     {
-		printf("Handling pipe - ");
-		printf("cmd adress = %p\n", (void *)cmd);
+		// printf("Handling pipe - ");
+		// printf("cmd adress = %p\n", (void *)cmd);
         handle_pipe(cmd, cmd_head, *i);
         return (current->next);
     }

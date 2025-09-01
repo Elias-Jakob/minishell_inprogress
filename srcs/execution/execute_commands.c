@@ -26,7 +26,7 @@ static void	wait_on_children(t_exec_context *exec_context)
 	current_cmd = exec_context->commands;
 	while (current_cmd)
 	{
-		if (current_cmd->is_builtin)
+		if (!current_cmd->is_builtin)
 		{
 			finished_pid = wait(&status);
 			if (finished_pid == -1)
