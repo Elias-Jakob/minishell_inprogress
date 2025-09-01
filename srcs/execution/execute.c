@@ -43,9 +43,10 @@ static char	*find_executable(char *cmd, char **dirs)
 	return (NULL);
 }
 
-static char	*look_up_cmdpath(char *cmd, char *paths)
+static char	*look_up_cmdpath(char *cmd, char *paths, int *err_status)
 {
 	char	**bin_dirs;
+	char	*cmd_path;
 
 	if (!cmd || !paths)
 		return (ft_putstr_fd("command not found:  \n", 2), NULL);
@@ -54,7 +55,17 @@ static char	*look_up_cmdpath(char *cmd, char *paths)
 	bin_dirs = ft_split(paths, ':');
 	if (!bin_dirs)
 		return (perror("ft_split failed"), NULL);
-	return (find_executable(cmd, bin_dirs));
+	cmd_path = find_executable(cmd, bin_dirs);
+	if (!cmd_path)
+		*err_status = 127;
+	if (cmd_path && access(cmd_path, X_OK) == -1)
+	{
+		*err_status = 126;
+		perror(cmd);
+		free(cmd_path);
+		cmd_path = NULL;
+	}
+	return (cmd_path);
 }
 
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
@@ -86,17 +97,15 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 		fatal_error(exec_context, "fork failed");
 	else if (command->pid == 0) // child
 	{
-		cmd_path = look_up_cmdpath(command->argv[0], exec_context->paths);
-		if (!cmd_path)
-			exit(127);
-		if (command->redirs)
-			setup_redirections(command->redirs);
-		execve(cmd_path, command->argv, exec_context->envp);
-		perror(command->argv[0]);
-		exit_status = 1;
-		if (access(cmd_path, X_OK) == -1)
-			exit_status = 126;
-		free(cmd_path);
+		cmd_path = look_up_cmdpath(command->argv[0], exec_context->paths, &exit_status);
+		if (cmd_path)
+		{
+			if (command->redirs)
+				setup_redirections(command->redirs);
+			execve(cmd_path, command->argv, exec_context->envp);
+			perror(command->argv[0]);
+			free(cmd_path);
+		}
 		clean_up_commands(exec_context);
 		exit(exit_status);
 	}
