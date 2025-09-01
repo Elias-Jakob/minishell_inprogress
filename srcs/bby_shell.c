@@ -125,10 +125,18 @@ int	main(int argc, char **argv, char **envp)
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head);
 		ft_lstclear(&token_list, free_token);
-		debug_cmds(cmd_head, line);
-		// exec_context.commands = cmd_head;
-		// exec_command_list(&exec_context);
-		// clean_up_commands(&exec_context);
+		//
+		//
+		// This does not work with pipes my friend !! :p
+		//
+		//
+		exec_context.commands = cmd_head;
+		exec_command_list(&exec_context);
+		clean_up_commands(&exec_context);
+		//
+		//
+		//
+		//
 		// sleep(10);
 		// debug_cmds(cmd_head, line);
 		add_history(line);

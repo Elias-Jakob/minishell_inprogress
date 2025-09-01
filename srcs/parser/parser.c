@@ -28,14 +28,12 @@ int	allocate_cmd_argv(t_cmd *cmd, t_list *current)
 
 void	handle_word(t_cmd *cmd, t_token *token, size_t *i)
 {
-	// printf("Handling word\n");
 	cmd->argv[*i] = ft_strdup(token->value);
 	(*i)++;
 }
 
 t_list *handle_redirection(t_cmd *cmd, t_list *current)
 {
-	// printf("Handling redirection\n");
 	return (parse_redirection(cmd, current));
 }
 
@@ -58,7 +56,6 @@ void	finalize_cmd(t_cmd *cmd, t_cmd **cmd_head, size_t i)
 
 int	handle_pipe(t_cmd *cmd, t_cmd **cmd_head, size_t i)
 {
-	// printf("Handling pipe\n");
 	init_redirs_if_needed(cmd);
 	cmd->redirs->out_type = RD_PIPE;
 	if (cmd->argv)
@@ -73,24 +70,17 @@ t_list	*process_token(t_cmd *cmd, t_list *current, size_t *i, t_cmd **cmd_head, 
 	t_list	*next;
 	
 	token = (t_token *)current->content;
-
 	if (!token)
 		return (current->next);
-	// printf("Current process token value: %s\n", token->value);
 	if (is_token_word(token->type))
 	{
-		// printf("Handling word - ");
-		// printf("cmd adress = %p\n", (void *)cmd);
 		handle_word(cmd, token, i);
 		return (current->next);
 	}
 	if (token->type == TK_PIPE)
     {
-		// printf("Handling pipe - ");
-		// printf("cmd adress = %p\n", (void *)cmd);
         handle_pipe(cmd, cmd_head, *i);
 		*is_redir = 1;
-		// printf("Returning after pipe handle: %s\n", ((t_token *)current->next->content)->value);
         return (current->next);
     }
 	if (is_token_redirect(token->type))
@@ -126,6 +116,8 @@ int parse_command(t_list **current_tk_list, t_cmd **cmd_head, int pipe_in)
 	if (!is_redir)
 		finalize_cmd(&cmd, cmd_head, i);
 	*current_tk_list = current;
+	if (is_redir && current)
+		return (parse_command(current_tk_list, cmd_head, 1));
 	return (EXIT_SUCCESS);
 }
 
@@ -135,10 +127,7 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 	current = token_list;
 	
 	while (current)
-	{
-		// printf("In parser current = %p\n", (void *)current);
 		if (parse_command(&current, cmd_head, 0) == EXIT_FAILURE)
 			return (EXIT_FAILURE);
-	}
 	return (EXIT_SUCCESS);
 }
