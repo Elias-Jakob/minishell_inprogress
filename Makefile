@@ -1,5 +1,11 @@
 NAME = minishell
-SRCS = srcs/bby_shell.c srcs/lexer/lexer.c srcs/parser/parser.c #srcs/execution/execute.c srcs/execution/pipeline.c srcs/execution/redirect.c srcs/utils/clean_up.c
+LEXER = srcs/lexer
+PARSER = srcs/parser
+SRCS = srcs/bby_shell.c \
+	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\
+	   $(PARSER)/utils.c $(PARSER)/parse_redirection.c $(PARSER)/parser.c\
+	   #srcs/execution/execute.c srcs/execution/pipeline.c\
+	   #srcs/execution/redirect.c srcs/utils/clean_up.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a
