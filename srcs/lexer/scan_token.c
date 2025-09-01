@@ -34,8 +34,8 @@ t_token_type	scan_for_word(char *input, size_t *length)
 	while (input[*length])
 	{
 		(*length)++;
-		if ((!ft_isalnum(input[*length]) && *input == '-')
-			|| is_space(input[*length]))
+		if ((!ft_isalnum(input[*length]) && *input != '-')
+			|| is_space(input[*length]) || input[*length] == '\0')
 			return (TK_WORD);
 	}
 	return (TK_ERROR);
