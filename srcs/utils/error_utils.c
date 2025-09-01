@@ -4,7 +4,6 @@ void	fatal_error(t_exec_context *exec_context, char *msg)
 {
 	clean_up_commands(exec_context);
 	free(exec_context->prompt);
-	free(exec_context->paths);
 	perror(msg);
 	exit(1);
 }

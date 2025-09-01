@@ -69,11 +69,13 @@ int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 int	exec_command(t_exec_context *exec_context, t_cmd *command)
 {
 	char	*cmd_path;
+	int		exit_status;
 	// 1. setup_fds
 	// 2. fork
 	// 3. make redirections
 	// 4. look up the path to the binary
 	// 5. execve
+	exit_status = 1;
 	if (command->redirs)
 	{
 		set_in_fd(exec_context, command, command->redirs);
@@ -81,7 +83,7 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 	}
 	command->pid = fork();
 	if (command->pid == -1)
-		error_and_exit("fork failed", 1);
+		fatal_error(exec_context, "fork failed");
 	else if (command->pid == 0) // child
 	{
 		cmd_path = look_up_cmdpath(command->argv[0], exec_context->paths);
@@ -90,14 +92,23 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 		if (command->redirs)
 			setup_redirections(command->redirs);
 		execve(cmd_path, command->argv, exec_context->envp);
-		perror("execve failed");
+		perror(command->argv[0]);
+		exit_status = 1;
+		if (access(cmd_path, X_OK) == -1)
+			exit_status = 126;
 		free(cmd_path);
-		exit(1);
+		clean_up_commands(exec_context);
+		exit(exit_status);
 	}
 	// parent (closing fds we dont need)
-	if (command->redirs->fds[0] != STDIN_FILENO && close(command->redirs->fds[0]) == -1)
-		fatal_error(exec_context, "close failed");
-	if (command->redirs->fds[1] != STDOUT_FILENO && close(command->redirs->fds[1]) == -1)
-		fatal_error(exec_context, "close failed");
+	if (command->redirs)
+	{
+		if (command->redirs->fds[0] != STDIN_FILENO
+			&& close(command->redirs->fds[0]) == -1)
+			fatal_error(exec_context, "close failed");
+		if (command->redirs->fds[1] != STDOUT_FILENO
+			&& close(command->redirs->fds[1]) == -1)
+			fatal_error(exec_context, "close failed");
+	}
 	return (command->pid);
 }
