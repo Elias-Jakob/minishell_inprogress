@@ -117,7 +117,7 @@ int	main(int argc, char **argv, char **envp)
 	token_list = NULL;
 	cmd_head = NULL;
 	line = readline("$> ");
-	while (line != NULL)
+	while (line != NULL && ft_strncmp("exit", line, 4))
 	{
 		token_list = NULL;
 		cmd_head = NULL;
