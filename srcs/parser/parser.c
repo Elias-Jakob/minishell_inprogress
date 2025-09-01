@@ -37,28 +37,9 @@ t_list *handle_redirection(t_cmd *cmd, t_list *current)
 	return (parse_redirection(cmd, current));
 }
 
-int	handle_pipe(t_cmd *cmd, t_cmd **cmd_head, size_t *i, t_list **current_tk_list, t_list *next)
-{
-	t_cmd	*new_cmd;
-
-	init_redirs_if_needed(cmd);
-	cmd->redirs->out_type = RD_PIPE;
-	if (cmd->argv)
-		cmd->argv[*i] = NULL;
-	new_cmd = malloc(sizeof(t_cmd));
-	if (!new_cmd)
-		return (EXIT_FAILURE);
-	*new_cmd = *cmd;
-	new_cmd->next = NULL;
-	append_cmd(cmd_head, new_cmd);
-	*current_tk_list = next;
-	return (0);
-}
-
 void	finalize_cmd(t_cmd *cmd, t_cmd **cmd_head, size_t i)
 {
 	t_cmd	*new_cmd;
-	printf("FINALZE CMD = %s\n", cmd->argv[0]);
 
 	if (cmd->argv)
 		cmd->argv[i] = NULL;
@@ -73,24 +54,38 @@ void	finalize_cmd(t_cmd *cmd, t_cmd **cmd_head, size_t i)
 	}
 }
 
-t_list	*process_token(t_cmd *cmd, t_list *current, size_t *i, t_cmd **cmd_head, t_list **current_tk_list)
+int	handle_pipe(t_cmd *cmd, t_cmd **cmd_head, size_t i)
+{
+	init_redirs_if_needed(cmd);
+	cmd->redirs->out_type = RD_PIPE;
+	if (cmd->argv)
+		cmd->argv[i] = NULL;
+	finalize_cmd(cmd, cmd_head, i);
+	return (EXIT_SUCCESS);
+}
+
+t_list	*process_token(t_cmd *cmd, t_list *current, size_t *i, t_cmd **cmd_head)
 {
 	t_token	*token;
 	t_list	*next;
 	
 	token = (t_token *)current->content;
+
 	if (!token)
 		return (current->next);
 	if (is_token_word(token->type))
 	{
+		printf("Handling word - ");
+		printf("cmd adress = %p\n", (void *)cmd);
 		handle_word(cmd, token, i);
 		return (current->next);
 	}
 	if (token->type == TK_PIPE)
     {
-        next = current->next;
-        handle_pipe(cmd, cmd_head, i, current_tk_list, next);
-        return (NULL);
+		printf("Handling pipe - ");
+		printf("cmd adress = %p\n", (void *)cmd);
+        handle_pipe(cmd, cmd_head, *i);
+        return (current->next);
     }
 	if (is_token_redirect(token->type))
 	{
@@ -116,7 +111,7 @@ int parse_command(t_list **current_tk_list, t_cmd **cmd_head, int pipe_in)
 	i = 0;
 	while (current)
 	{
-		current = process_token(&cmd, current, &i, cmd_head, current_tk_list);
+		current = process_token(&cmd, current, &i, cmd_head);
 		if (!current)
 		{
 			finalize_cmd(&cmd, cmd_head, i);
