@@ -17,7 +17,7 @@ void	set_in_fd(
 		redirs->fds[0] = ft_atoi(redirs->infile_name);
 	// TODO: Implement heredoc
 	else if (redirs->in_type == RD_HEREDOC)
-		;
+		return ;
 }
 
 void	set_out_fd(
@@ -47,7 +47,7 @@ void	set_out_fd(
 			command->next->redirs->fds[0] = pipe_fds[0];
 	}
 	else if (redirs->out_type == RD_HEREDOC)
-		;
+		return ;
 }
 
 void	setup_redirections(t_redirs *redirs)

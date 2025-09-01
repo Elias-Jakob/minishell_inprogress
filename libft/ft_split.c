@@ -54,7 +54,7 @@ static char	*copy_str(const char *s, size_t start, size_t end)
 
 static void	free_final(char **final, size_t i)
 {
-	while (i >= 0)
+	while (i > 0)
 	{
 		free(final[i]);
 		i--;
