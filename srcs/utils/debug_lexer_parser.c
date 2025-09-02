@@ -116,8 +116,7 @@ static void print_redirection_details(t_redirs *redirs)
             printf(" (append mode)");
         printf("\n");
     }
-    if (redirs->fds[0] != 0 || redirs->fds[1] != 1)
-        printf("      FDs: [%d, %d]\n", redirs->fds[0], redirs->fds[1]);
+	printf("      FDs: [%d, %d]\n", redirs->fds[0], redirs->fds[1]);
 }
 
 static void print_command_details(t_cmd *cmd, int cmd_index)

@@ -5,9 +5,9 @@ int parse_command(t_list **current_tk_list, t_cmd **cmd_head, int pipe_in);
 void	init_cmd(t_cmd *cmd, int pipe_in)
 {
     ft_memset(cmd, 0, sizeof(t_cmd));
+	init_redirs_if_needed(cmd);
     if (pipe_in)
     {
-        init_redirs_if_needed(cmd);
         cmd->redirs->in_type = RD_PIPE;
     }
 }

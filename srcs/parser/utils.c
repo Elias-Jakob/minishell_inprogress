@@ -32,7 +32,14 @@ void init_redirs_if_needed(t_cmd *cmd)
     if (!cmd->redirs)
     {
         cmd->redirs = malloc(sizeof(t_redirs));
+		if (!cmd->redirs)
+		{
+			printf("Error: creating redirs for cmd");
+			exit(1);
+		}
         ft_memset(cmd->redirs, 0, sizeof(t_redirs));
+		cmd->redirs->fds[0] = 0;
+		cmd->redirs->fds[1] = 1;
     }
 }
 

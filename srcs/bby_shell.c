@@ -46,25 +46,14 @@ int	main(int argc, char **argv, char **envp)
 		cmd_head = NULL;
 		if (lexer(line, &token_list))
 			return (EXIT_FAILURE);
-		(void)cmd_head;
-		debug_lexer(token_list, line);
 		parser(token_list, &cmd_head);
-		debug_parser(cmd_head, line);
+		// debug_lexer(token_list, line);
+		// debug_parser(cmd_head, line);
 		ft_lstclear(&token_list, free_token);
-		//
-		//
-		// This does not work with pipes my friend !! :p
-		//
-		//
-		// exec_context.commands = cmd_head;
-		// exec_command_list(&exec_context);
-		// clean_up_commands(&exec_context);
-		//
-		//
-		//
-		//
-		// sleep(10);
-		// debug_cmds(cmd_head, line);
+		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
+		exec_context.commands = cmd_head;
+		exec_command_list(&exec_context);
+		clean_up_commands(&exec_context);
 		add_history(line);
 		free(line);
 		token_list = NULL;
