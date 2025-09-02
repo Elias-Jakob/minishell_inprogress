@@ -195,35 +195,35 @@ void debug_parser(t_cmd *cmd_head, const char *input)
 
 void debug_lexer_and_parser(t_list *token_list, t_cmd *cmd_head, const char *input)
 {
-    debug_lexer(token_list, input);
-    debug_parser(cmd_head, input);
+	debug_lexer(token_list, input);
+	debug_parser(cmd_head, input);
 }
 
 static void free_token(void *content)
 {
-    t_token *token = (t_token *)content;
-    if (!token)
-        return;
-    if (token->value)
-        free(token->value);
-    free(token);
+	t_token *token = (t_token *)content;
+	if (!token)
+		return;
+	if (token->value)
+		free(token->value);
+	free(token);
 }
 
 void debug_input(const char *test_input)
 {
-    t_list *token_list = NULL;
-    t_cmd *cmd_head = NULL;
-    
-    printf("\n" CYAN "=== TESTING INPUT: \"%s\" ===" RESET "\n", test_input);
-    if (lexer((char*)test_input, &token_list) != 0)
-    {
-        printf(RED "🛂 Lexer failed!\n" RESET);
-        return;
-    }
-    if (parser(token_list, &cmd_head) != 0)
-    {
-        printf(RED "🛂 Parser failed!\n" RESET);
-    }
-    debug_lexer_and_parser(token_list, cmd_head, test_input);
-    ft_lstclear(&token_list, free_token);
+	t_list *token_list = NULL;
+	t_cmd *cmd_head = NULL;
+
+	printf("\n" CYAN "=== TESTING INPUT: \"%s\" ===" RESET "\n", test_input);
+	if (lexer((char*)test_input, &token_list) != 0)
+	{
+		printf(RED "🛂 Lexer failed!\n" RESET);
+		return;
+	}
+	if (parser(token_list, &cmd_head) != 0)
+	{
+		printf(RED "🛂 Parser failed!\n" RESET);
+	}
+	debug_lexer_and_parser(token_list, cmd_head, test_input);
+	ft_lstclear(&token_list, free_token);
 }

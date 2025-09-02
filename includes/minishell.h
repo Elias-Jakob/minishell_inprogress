@@ -120,14 +120,14 @@ int	lexer(char *input, t_list **token_list);
 
 // ---------------- PARSER ---------------- //
 // utils
-int		is_token_redirect(t_token_type type);
-int		is_token_word(t_token_type type);
-void	append_cmd(t_cmd **head, t_cmd *new_cmd);
-void	init_redirs_if_needed(t_cmd *cmd);
-int		get_argv_amount(t_list *start);
+// int		is_token_redirect(t_token_type type);
+// int		is_token_word(t_token_type type);
+// void	append_cmd(t_cmd **head, t_cmd *new_cmd);
+// void	init_redirs_if_needed(t_cmd *cmd);
+// int		get_argv_amount(t_list *start);
 
 // parse redirections
-t_list	*parse_redirection(t_cmd *cmd, t_list *current);
+// t_list	*parse_redirection(t_cmd *cmd, t_list *current);
 
 
 int parser(t_list *token_list, t_cmd **cmd_head);
