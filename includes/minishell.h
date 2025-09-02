@@ -155,4 +155,8 @@ void	clean_up_commands(t_exec_context *exec_context);
 void	fatal_error(t_exec_context *exec_context, char *msg);
 void	error_and_exit(char *err_msg, int exit_status);
 
+void debug_lexer(t_list *token_list, const char *input);
+void debug_parser(t_cmd *cmd_head, const char *input);
+void debug_input(const char *test_input);
+
 #endif

@@ -4,6 +4,7 @@ PARSER = srcs/parser
 SRCS = srcs/bby_shell.c \
 	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\
 	   $(PARSER)/utils.c $(PARSER)/parse_redirection.c $(PARSER)/parser.c\
+	   srcs/utils/debug_lexer_parser.c\
 	   srcs/execution/execute.c srcs/execution/execute_commands.c\
 	   srcs/execution/redirect.c srcs/utils/clean_up.c srcs/utils/error_utils.c
 OBJS = $(SRCS:.c=.o)
