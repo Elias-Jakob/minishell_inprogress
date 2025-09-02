@@ -2,13 +2,13 @@
 
 static t_token	*get_current_token(t_list *token_list);
 static t_cmd	*create_new_command(t_token *token);
-static int	add_argv_to_command(t_cmd *cmd, t_token *token);
-static t_token	*get_next_token(t_list *token_list);
-static int	is_redirection_token(t_token *token);
+static t_redirs	*init_redirection(void);
 static int	handle_redirection(t_cmd **current_cmd, t_list *token_node);
 static int	handle_pipe(t_cmd **current_cmd);
 static int	count_argv_size(char **argv);
-static t_redirs	*init_redirection(void);
+static int	add_argv_to_command(t_cmd *cmd, t_token *token);
+static int	is_redirection_token(t_token *token);
+static t_token	*get_next_token(t_list *token_list);
 
 int parser(t_list *token_list, t_cmd **cmd_head)
 {
