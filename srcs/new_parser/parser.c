@@ -37,7 +37,7 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 			}
 			current_cmd = new_cmd;
 		}
-		else if (token->type == TK_WORD && current_cmd)
+		else if ((token->type == TK_WORD || token->type == TK_DOUBLE_QUOTE || token->type == TK_SINGLE_QUOTE) && current_cmd)
 			add_argv_to_command(current_cmd, token);
 		else if (token->type == TK_PIPE)
 			handle_pipe(&current_cmd);

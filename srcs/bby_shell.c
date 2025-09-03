@@ -24,21 +24,66 @@ void free_cmd(void *content)
     free(cmd);
 }
 
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char			*line;
+// 	t_exec_context	exec_context;
+// 	t_list			*token_list;
+// 	t_cmd			*cmd_head;
+//
+// 	(void)argc;
+// 	(void)argv;
+// 	exec_context.envp = envp;
+// 	exec_context.paths = getenv("PATH");
+// 	(void)exec_context;
+// 	token_list = ft_lstnew(NULL);
+// 	token_list = NULL;
+// 	cmd_head = NULL;
+// 	line = readline("$> ");
+// 	while (line != NULL && ft_strncmp("exit", line, 4))
+// 	{
+// 		token_list = NULL;
+// 		cmd_head = NULL;
+// 		if (lexer(line, &token_list))
+// 			return (EXIT_FAILURE);
+// 		parser(token_list, &cmd_head);
+// 		// debug_lexer(token_list, line);
+// 		// debug_parser(cmd_head, line);
+// 		ft_lstclear(&token_list, free_token);
+// 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
+// 		exec_context.commands = cmd_head;
+// 		exec_command_list(&exec_context);
+// 		clean_up_commands(&exec_context);
+// 		add_history(line);
+// 		free(line);
+// 		token_list = NULL;
+// 		cmd_head = NULL;
+// 		line = readline("$> ");
+// 		// write(1, "\n", 1);
+// 		// rl_on_new_line();
+// 		// rl_replace_line("", 0);
+// 		// rl_redisplay();
+// 	}
+// 	clear_history();
+// 	return (EXIT_SUCCESS);
+// }
+
+// For lexer/parser
 int	main(int argc, char **argv, char **envp)
 {
 	char			*line;
-	t_exec_context	exec_context;
 	t_list			*token_list;
 	t_cmd			*cmd_head;
+	t_exec_context	exec_context;
 
 	(void)argc;
 	(void)argv;
-	exec_context.envp = envp;
-	exec_context.paths = getenv("PATH");
-	(void)exec_context;
+	(void)envp;
 	token_list = ft_lstnew(NULL);
 	token_list = NULL;
 	cmd_head = NULL;
+	exec_context.envp = envp;
+	exec_context.paths = getenv("PATH");
 	line = readline("$> ");
 	while (line != NULL && ft_strncmp("exit", line, 4))
 	{
@@ -47,11 +92,13 @@ int	main(int argc, char **argv, char **envp)
 		if (lexer(line, &token_list))
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head);
-		// debug_lexer(token_list, line);
-		// debug_parser(cmd_head, line);
+		debug_lexer(token_list, line);
+		debug_parser(cmd_head, line);
 		ft_lstclear(&token_list, free_token);
 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
 		// ejakob: ejakob makes no mistakes hahah!!! ps. thx for the excellent fix:)
+		// leberton: Never ? Are you sure ? Didn't I see some SEGV's on your screen the other day ? And what fix x) ?
+		// leberton: I like very much all the builtins that are working :))
 		exec_context.commands = cmd_head;
 		exec_command_list(&exec_context);
 		clean_up_commands(&exec_context);
@@ -61,48 +108,14 @@ int	main(int argc, char **argv, char **envp)
 		//
 		//
 		// sleep(10);
-		// debug_cmds(cmd_head, line);
+		// fix_quotes();
 		add_history(line);
 		free(line);
 		token_list = NULL;
 		cmd_head = NULL;
 		line = readline("$> ");
-		// write(1, "\n", 1);
-		// rl_on_new_line();
-		// rl_replace_line("", 0);
-		// rl_redisplay();
 	}
 	clear_history();
 	return (EXIT_SUCCESS);
 }
 
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	char			*line;
-// 	t_exec_context	exec_context;
-// 	t_list			*token_list;
-//
-//
-// 	(void)argc;
-// 	(void)argv;
-// 	exec_context.envp = envp;
-// 	exec_context.paths = getenv("PATH");
-// 	token_list = ft_lstnew(NULL);
-// 	// using_history();
-// 	// stifle_history(3);
-// 	while ((line = readline("$> ")) != NULL)
-// 	{
-// 		if (lexer(line, &token_list))
-// 			return (EXIT_FAILURE);
-// 		while (token_list)
-// 		{
-// 			print_token((t_token *)token_list->content);
-// 			token_list = token_list->next;
-// 		}
-// 		add_history(line);
-// 		free(line);
-// 	}
-// 	clear_history();
-// 	return (EXIT_SUCCESS);
-// 	return (EXIT_SUCCESS);
-// }
