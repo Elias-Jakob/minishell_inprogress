@@ -133,6 +133,7 @@ int	main(int argc, char **argv, char **envp)
 		exec_context.commands = cmd_head;
 		exec_command_list(&exec_context);
 		clean_up_commands(&exec_context);
+		printf("%d ", exec_context.exit_status);
 		//
 		//
 		//

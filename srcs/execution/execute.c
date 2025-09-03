@@ -1,83 +1,21 @@
 #include "../../includes/minishell.h"
 
-static char	*check_full_path(char *cmd)
-{
-	char	*pathname;
-
-	if (access(cmd, F_OK) == 0)
-	{
-		pathname = ft_strdup(cmd);
-		if (!pathname)
-			return (perror("ft_strdup failed"), NULL);
-		return (pathname);
-	}
-	return (perror(cmd), NULL);
-}
-
-static char	*find_executable(char *cmd, char **dirs)
-{
-	size_t	i;
-	char	*path;
-	char	*pathname;
-
-	i = 0;
-	while (dirs && dirs[i])
-	{
-		path = ft_strjoin(dirs[i], "/");
-		if (!path)
-			return (free_str_arr(dirs), perror("ft_strjoin failed"), NULL);
-		pathname = ft_strjoin(path, cmd);
-		if (!pathname)
-			return (free_str_arr(dirs), free(path),
-				perror("ft_strjoin failed"), NULL);
-		if (access(pathname, F_OK) == 0)
-			return (free_str_arr(dirs), free(path), pathname);
-		free(path);
-		free(pathname);
-		i++;
-	}
-	free_str_arr(dirs);
-	ft_putstr_fd("command not found: ", 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd("\n", 2);
-	return (NULL);
-}
-
-static char	*look_up_cmdpath(char *cmd, char *paths, int *err_status)
-{
-	char	**bin_dirs;
-	char	*cmd_path;
-
-	if (!cmd || !paths)
-		return (ft_putstr_fd("command not found:  \n", 2), NULL);
-	if (ft_strchr(cmd, '/'))
-		return (check_full_path(cmd));
-	bin_dirs = ft_split(paths, ':');
-	if (!bin_dirs)
-		return (perror("ft_split failed"), NULL);
-	cmd_path = find_executable(cmd, bin_dirs);
-	if (!cmd_path)
-		*err_status = 127;
-	if (cmd_path && access(cmd_path, X_OK) == -1)
-	{
-		*err_status = 126;
-		perror(cmd);
-		free(cmd_path);
-		cmd_path = NULL;
-	}
-	return (cmd_path);
-}
-
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 {
 	(void)exec_context;
-	(void)builtin;
-	// 1. make redirs
-	// 2. call builtin function
-	return (0);
+	int	exit_status;
+	int	out_fd;
+
+	out_fd = STDOUT_FILENO;
+	if (builtin->redirs)
+		out_fd = builtin->redirs->fds[1];
+	exit_status = 0;
+	if (!ft_strncmp("echo", builtin->argv[0], 4))
+		exit_status = echo(builtin, out_fd);
+	return (exit_status);
 }
 
-int	exec_command(t_exec_context *exec_context, t_cmd *command)
+int	launch_child_process(t_exec_context *exec_context, t_cmd *command)
 {
 	char	*cmd_path;
 	int		exit_status;
@@ -87,11 +25,6 @@ int	exec_command(t_exec_context *exec_context, t_cmd *command)
 	// 4. look up the path to the binary
 	// 5. execve
 	exit_status = 1;
-	if (command->redirs)
-	{
-		set_in_fd(exec_context, command, command->redirs);
-		set_out_fd(exec_context, command, command->redirs);
-	}
 	command->pid = fork();
 	if (command->pid == -1)
 		fatal_error(exec_context, "fork failed");
