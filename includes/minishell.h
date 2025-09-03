@@ -133,12 +133,15 @@ int	lexer(char *input, t_list **token_list);
 int parser(t_list *token_list, t_cmd **cmd_head);
 // ---------------------------------------- //
 
-// EXECUTION PART
+// ------------ EXECUTION PART ------------ //
 void	exec_command_list(t_exec_context *exec_context);
 
 // execution/execute.c
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin);
-int	exec_command(t_exec_context *exec_context, t_cmd *command);
+int	launch_child_process(t_exec_context *exec_context, t_cmd *command);
+
+// find_executable.c
+char	*look_up_cmdpath(char *cmd, char *paths, int *err_status);
 
 // execution/redirect.c
 void	setup_redirections(t_redirs *redirs);
@@ -154,6 +157,11 @@ void	clean_up_commands(t_exec_context *exec_context);
 // utils/error_utils.c
 void	fatal_error(t_exec_context *exec_context, char *msg);
 void	error_and_exit(char *err_msg, int exit_status);
+// ---------------------------------------- //
+
+// --------------- BUILTINS  -------------- //
+int	echo(t_cmd *cmd, int out_fd);
+// ---------------------------------------- //
 
 void debug_lexer(t_list *token_list, const char *input);
 void debug_parser(t_cmd *cmd_head, const char *input);

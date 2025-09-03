@@ -51,9 +51,17 @@ int	main(int argc, char **argv, char **envp)
 		// debug_parser(cmd_head, line);
 		ft_lstclear(&token_list, free_token);
 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
+		// ejakob: ejakob makes no mistakes hahah!!! ps. thx for the excellent fix:)
 		exec_context.commands = cmd_head;
 		exec_command_list(&exec_context);
 		clean_up_commands(&exec_context);
+		printf("%d ", exec_context.exit_status);
+		//
+		//
+		//
+		//
+		// sleep(10);
+		// debug_cmds(cmd_head, line);
 		add_history(line);
 		free(line);
 		token_list = NULL;

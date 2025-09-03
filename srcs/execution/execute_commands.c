@@ -42,16 +42,21 @@ static void	wait_on_children(t_exec_context *exec_context)
 
 void	exec_command_list(t_exec_context *exec_context)
 {
-	t_cmd	*current_cmd;
+	t_cmd	*command;
 
-	current_cmd = exec_context->commands;
-	while (current_cmd)
+	command = exec_context->commands;
+	while (command)
 	{
-		if (current_cmd->is_builtin)
-			exec_builtin(exec_context, current_cmd);
+		if (command->redirs)
+		{
+			set_in_fd(exec_context, command, command->redirs);
+			set_out_fd(exec_context, command, command->redirs);
+		}
+		if (command->is_builtin)
+			exec_builtin(exec_context, command);
 		else
-			exec_command(exec_context, current_cmd);
-		current_cmd = current_cmd->next;
+			launch_child_process(exec_context, command);
+		command = command->next;
 	}
 	// wait for all processes
 	wait_on_children(exec_context);
