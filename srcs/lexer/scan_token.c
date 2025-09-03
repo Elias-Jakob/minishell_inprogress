@@ -34,7 +34,7 @@ t_token_type	scan_for_word(char *input, size_t *length)
 	while (input[*length])
 	{
 		(*length)++;
-		if ((!ft_isalnum(input[*length]) && *input != '-')
+		if ((!ft_isalnum(input[*length]) && *input != '-' && *input != '.')
 			|| is_space(input[*length]) || input[*length] == '\0')
 			return (TK_WORD);
 	}
@@ -87,7 +87,7 @@ t_token_type	scan_for_token_type(char *input, size_t *length)
 		return (scan_for_env(input, length));
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
-	if (ft_isalnum(*input) || *input == '-')
+	if (ft_isalnum(*input) || *input == '-' || *input == '.')
 		return (scan_for_word(input, length));
 	return (TK_ERROR);
 }
