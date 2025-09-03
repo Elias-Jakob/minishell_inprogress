@@ -29,13 +29,19 @@ t_token_type	scan_for_quotes(char *input, size_t *length)
 	return (TK_ERROR);
 }
 
+static	int	is_char_redir(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
+}
+
+
 t_token_type	scan_for_word(char *input, size_t *length)
 {
 	while (input[*length])
 	{
 		(*length)++;
-		if ((!ft_isalnum(input[*length]) && *input != '-' && *input != '.')
-			|| is_space(input[*length]) || input[*length] == '\0')
+		if (is_space(input[*length]) || input[*length] == '\0'
+			|| is_char_redir(input[*length]))
 			return (TK_WORD);
 	}
 	return (TK_ERROR);
@@ -87,7 +93,5 @@ t_token_type	scan_for_token_type(char *input, size_t *length)
 		return (scan_for_env(input, length));
 	if (*input == '"' || *input == '\'')
 		return (scan_for_quotes(input, length));
-	if (ft_isalnum(*input) || *input == '-' || *input == '.')
-		return (scan_for_word(input, length));
-	return (TK_ERROR);
+	return (scan_for_word(input, length));
 }
