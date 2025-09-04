@@ -52,14 +52,14 @@ void	set_out_fd(
 
 void	setup_redirections(t_redirs *redirs)
 {
-	if (redirs->fds[0] != STDIN_FILENO)
+	if (redirs->fds[0] != STDIN_FILENO && redirs->fds[0] != STDOUT_FILENO)
 	{
 		if (dup2(redirs->fds[0], STDIN_FILENO) == -1)
 			error_and_exit("dup2 failed", 1);
 		if (close(redirs->fds[0]) == -1)
 			error_and_exit("close failed", 1);
 	}
-	if (redirs->fds[1] != STDOUT_FILENO)
+	if (redirs->fds[1] != STDOUT_FILENO && redirs->fds[1] != STDIN_FILENO )
 	{
 		if (dup2(redirs->fds[1], STDOUT_FILENO) == -1)
 			error_and_exit("dup2 failed", 1);
