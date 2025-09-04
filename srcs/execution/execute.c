@@ -3,18 +3,18 @@
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 {
 	(void)exec_context;
-	int	exit_status;
 	int	out_fd;
 
 	out_fd = STDOUT_FILENO;
 	if (builtin->redirs)
 		out_fd = builtin->redirs->fds[1];
-	exit_status = 0;
 	if (!ft_strncmp("echo", builtin->argv[0], 4))
-		exit_status = echo(builtin, out_fd);
-	// else if (!ft_strncmp("cd", builtin->argv[0], 2))
-	// 	exit_status = cd(builtin);
-	return (exit_status);
+		builtin->exit_status = echo(builtin, out_fd);
+	else if (!ft_strncmp("cd", builtin->argv[0], 2))
+		builtin->exit_status = cd(builtin, out_fd);
+	else if (!ft_strncmp("pwd", builtin->argv[0], 3))
+		builtin->exit_status = pwd(builtin, out_fd);
+	return (0);
 }
 
 int	launch_child_process(t_exec_context *exec_context, t_cmd *command)
