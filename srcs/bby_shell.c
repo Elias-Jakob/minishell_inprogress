@@ -92,8 +92,7 @@ int	main(int argc, char **argv, char **envp)
 		if (lexer(line, &token_list))
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head);
-		debug_lexer(token_list, line);
-		debug_parser(cmd_head, line);
+		debug_lexer_and_parser(token_list, cmd_head, line);
 		ft_lstclear(&token_list, free_token);
 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
 		// ejakob: ejakob makes no mistakes hahah!!! ps. thx for the excellent fix:)

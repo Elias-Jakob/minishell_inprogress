@@ -167,6 +167,7 @@ int	pwd(t_cmd *cmd, int out_fd);
 
 void debug_lexer(t_list *token_list, const char *input);
 void debug_parser(t_cmd *cmd_head, const char *input);
+void debug_lexer_and_parser(t_list *token_list, t_cmd *cmd_head, const char *input);
 void debug_input(const char *test_input);
 
 #endif

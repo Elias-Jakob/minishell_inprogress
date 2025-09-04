@@ -165,22 +165,39 @@ void debug_parser(t_cmd *cmd_head, const char *input)
         printf("Input: " RED "(NULL)" RESET "\n");
     else
         printf("Input: \"" YELLOWN "%s" RESET "\"\n", input);
+    
     if (!cmd_head)
     {
         printf(RED "🛂 Command list is NULL!\n" RESET);
         printf("========================================\n\n");
         return;
     }
+    
     int cmd_count = 0;
+    int empty_cmd_count = 0;  // Compteur pour les commandes sans argv
     t_cmd *current = cmd_head;
+    
+    // Compter les commandes et analyser leur contenu
     while (current)
     {
         cmd_count++;
+        if (!current->argv || !current->argv[0])
+            empty_cmd_count++;
         current = current->next;
     }
     
     printf("Command count: " GREEN "%d" RESET "\n", cmd_count);
     printf("Pipeline detected: %s\n", (cmd_count > 1) ? "Yes" : "No");
+    
+    // Information spéciale pour les commandes sans argv
+    if (empty_cmd_count > 0)
+    {
+        if (empty_cmd_count == cmd_count)
+            printf(CYAN "ℹ️  All commands are redirection-only\n" RESET);
+        else
+            printf(CYAN "ℹ️  %d redirection-only command(s) detected\n" RESET, empty_cmd_count);
+    }
+    
     printf("----------------------------------------\n");
     current = cmd_head;
     int cmd_index = 0;
@@ -193,37 +210,91 @@ void debug_parser(t_cmd *cmd_head, const char *input)
     printf("========================================\n\n");
 }
 
+
+// Fonction helper pour identifier le type de commande
+const char* get_command_type_string(t_cmd *cmd)
+{
+    if (!cmd)
+        return "NULL";
+    
+    if (!cmd->argv || !cmd->argv[0])
+    {
+        if (cmd->redirs)
+            return "REDIRECTION-ONLY";
+        else
+            return "EMPTY";
+    }
+    
+    if (cmd->is_builtin)
+        return "BUILTIN";
+    
+    return "EXTERNAL";
+}
+
+// Fonction de debug étendue pour les cas particuliers
+void debug_special_cases(t_cmd *cmd_head)
+{
+    if (!cmd_head)
+        return;
+    
+    t_cmd *current = cmd_head;
+    int has_special_cases = 0;
+    
+    printf(CYAN "🔍 Special case analysis:\n" RESET);
+    
+    while (current)
+    {
+        // Cas 1: Commande sans argv
+        if (!current->argv || !current->argv[0])
+        {
+            has_special_cases = 1;
+            printf("  • Found redirection-only command");
+            if (current->redirs && current->redirs->in_type == RD_HEREDOC)
+                printf(" (heredoc: %s)", current->redirs->heredoc_delimiter);
+            printf("\n");
+        }
+        
+        // Cas 2: Commande avec redirections multiples
+        if (current->redirs && current->redirs->in_type != RD_STD && current->redirs->out_type != RD_STD)
+        {
+            has_special_cases = 1;
+            printf("  • Command with both input and output redirections\n");
+        }
+        
+        current = current->next;
+    }
+    
+    if (!has_special_cases)
+        printf("  • No special cases detected\n");
+    
+    printf("\n");
+}
+
+// Version améliorée de debug_lexer_and_parser
 void debug_lexer_and_parser(t_list *token_list, t_cmd *cmd_head, const char *input)
 {
-	debug_lexer(token_list, input);
-	debug_parser(cmd_head, input);
-}
-
-static void free_token(void *content)
-{
-	t_token *token = (t_token *)content;
-	if (!token)
-		return;
-	if (token->value)
-		free(token->value);
-	free(token);
-}
-
-void debug_input(const char *test_input)
-{
-	t_list *token_list = NULL;
-	t_cmd *cmd_head = NULL;
-
-	printf("\n" CYAN "=== TESTING INPUT: \"%s\" ===" RESET "\n", test_input);
-	if (lexer((char*)test_input, &token_list) != 0)
-	{
-		printf(RED "🛂 Lexer failed!\n" RESET);
-		return;
-	}
-	if (parser(token_list, &cmd_head) != 0)
-	{
-		printf(RED "🛂 Parser failed!\n" RESET);
-	}
-	debug_lexer_and_parser(token_list, cmd_head, test_input);
-	ft_lstclear(&token_list, free_token);
+    debug_lexer(token_list, input);
+    debug_parser(cmd_head, input);
+    
+    // Ajout d'une analyse des cas spéciaux si nécessaire
+    if (cmd_head)
+    {
+        t_cmd *current = cmd_head;
+        int has_empty_commands = 0;
+        
+        while (current)
+        {
+            if (!current->argv || !current->argv[0])
+            {
+                has_empty_commands = 1;
+                break;
+            }
+            current = current->next;
+        }
+        
+        if (has_empty_commands)
+        {
+            debug_special_cases(cmd_head);
+        }
+    }
 }
