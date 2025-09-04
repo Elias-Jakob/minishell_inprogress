@@ -10,8 +10,8 @@ SRCS = srcs/bby_shell.c \
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER)/execute.c $(EXECUTER)/execute_commands.c\
 	   $(EXECUTER)/redirect.c $(EXECUTER)/find_executable.c\
-		 $(BUILTINS)/ft_echo.c $(BUILTINS)/ft_cd.c \
-		 $(UTILS)/clean_up.c $(UTILS)/error_utils.c
+	   $(BUILTINS)/ft_echo.c\
+	   $(UTILS)/clean_up.c $(UTILS)/error_utils.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a
@@ -30,8 +30,10 @@ $(LIBFT):
 
 clean:
 	rm -f $(OBJS)
+	make clean -C $(LIBFT_DIR)
 
 fclean: clean
 	rm -f $(NAME)
+	make fclean -C $(LIBFT_DIR)
 
 re: fclean all

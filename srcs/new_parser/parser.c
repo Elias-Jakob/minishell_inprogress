@@ -52,6 +52,27 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 	return (EXIT_SUCCESS);
 }
 
+// echo cd pwd export unset env exit
+static int	is_token_builtin(t_token *token)
+{
+	if (ft_strncmp(token->value, "echo", 5) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "cd", 3) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "pwd", 4) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "export", 7) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "unset", 6) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "env", 4) == 0)
+		return (EXIT_SUCCESS);
+	if (ft_strncmp(token->value, "exit", 5) == 0)
+		return (EXIT_SUCCESS);
+	return (EXIT_FAILURE);
+}
+
+
 static t_cmd	*create_new_command(t_token *token)
 {
 	t_cmd	*new_command;
@@ -62,7 +83,10 @@ static t_cmd	*create_new_command(t_token *token)
 	new_command->argv = NULL;
 	new_command->redirs = NULL;
 	new_command->pid = 0;
-	new_command->is_builtin = 0;
+	if (is_token_builtin(token) == EXIT_SUCCESS)
+		new_command->is_builtin = 1;
+	else
+		new_command->is_builtin = 0;
 	new_command->exit_status = 0;
 	new_command->next = NULL;
 	if (token)
@@ -80,7 +104,7 @@ static t_cmd	*create_new_command(t_token *token)
 }
 
 // static int	add_command_head(t_cmd **cmd_head, t_cmd *new_command)
-// {
+// {"Hello World"
 // 	t_cmd	*current_command;
 //
 // 	if (cmd_head == NULL || new_command == NULL)
@@ -105,7 +129,6 @@ static int	add_argv_to_command(t_cmd *cmd, t_token *token)
 	if (cmd == NULL || token == NULL)
 		return (EXIT_FAILURE);
 	count = count_argv_size(cmd->argv);
-	
 	// make  ft_realloc
 	new_argv = realloc(cmd->argv, sizeof(char *) * (count + 2));
 	if (!new_argv)

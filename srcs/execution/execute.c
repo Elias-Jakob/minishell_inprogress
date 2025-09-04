@@ -12,8 +12,8 @@ int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 	exit_status = 0;
 	if (!ft_strncmp("echo", builtin->argv[0], 4))
 		exit_status = echo(builtin, out_fd);
-	else if (!ft_strncmp("cd", builtin->argv[0], 2))
-		exit_status = cd(builtin);
+	// else if (!ft_strncmp("cd", builtin->argv[0], 2))
+	// 	exit_status = cd(builtin);
 	return (exit_status);
 }
 

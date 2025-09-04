@@ -1,14 +1,24 @@
 #include "../../includes/minishell.h"
+#include <stddef.h>
 
 static t_token	*create_token(t_token_type type, char *input, size_t length)
 {
 	t_token	*token;
+	char	*value_start;
+	size_t	value_length;
 
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
 	token->type = type;
-	token->value = ft_strndup(input, length);
+	if (type == TK_DOUBLE_QUOTE && length > 2)
+	{
+		value_start = input + 1;
+		value_length = length - 2;
+		token->value = ft_strndup(value_start, value_length);
+	}
+	else
+		token->value = ft_strndup(input, length);
 	return (token);
 }
 
