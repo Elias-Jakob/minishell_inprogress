@@ -35,12 +35,19 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 					last = last->next;
 				last->next = new_cmd;
 			}
+			printf("Token val: %s\n", token->value);
 			current_cmd = new_cmd;
 		}
 		else if ((token->type == TK_WORD || token->type == TK_DOUBLE_QUOTE || token->type == TK_SINGLE_QUOTE) && current_cmd)
+		{
+			printf("Add argv\n");
 			add_argv_to_command(current_cmd, token);
+		}
 		else if (token->type == TK_PIPE)
+		{
+			printf("Handling pipe\n");
 			handle_pipe(&current_cmd);
+		}
 		else if (is_redirection_token(token))
 		{
 			handle_redirection(&current_cmd, current_token_node);
@@ -55,19 +62,21 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 // echo cd pwd export unset env exit
 static int	is_token_builtin(t_token *token)
 {
-	if (ft_strncmp(token->value, "echo", 5) == 0)
+	if (token == NULL)
+		return (EXIT_FAILURE);
+	if (ft_strncmp(token->value, "echo", 4) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "cd", 3) == 0)
+	if (ft_strncmp(token->value, "cd", 2) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "pwd", 4) == 0)
+	if (ft_strncmp(token->value, "pwd", 3) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "export", 7) == 0)
+	if (ft_strncmp(token->value, "export", 6) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "unset", 6) == 0)
+	if (ft_strncmp(token->value, "unset", 5) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "env", 4) == 0)
+	if (ft_strncmp(token->value, "env", 3) == 0)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "exit", 5) == 0)
+	if (ft_strncmp(token->value, "exit", 4) == 0)
 		return (EXIT_SUCCESS);
 	return (EXIT_FAILURE);
 }
@@ -83,10 +92,9 @@ static t_cmd	*create_new_command(t_token *token)
 	new_command->argv = NULL;
 	new_command->redirs = NULL;
 	new_command->pid = 0;
+	new_command->is_builtin = 0;
 	if (is_token_builtin(token) == EXIT_SUCCESS)
 		new_command->is_builtin = 1;
-	else
-		new_command->is_builtin = 0;
 	new_command->exit_status = 0;
 	new_command->next = NULL;
 	if (token)
