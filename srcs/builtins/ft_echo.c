@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-int	echo(t_cmd *cmd, int out_fd)
+int	ft_echo(t_cmd *cmd, int out_fd)
 {
 	int	n_flag;
 	size_t	i;

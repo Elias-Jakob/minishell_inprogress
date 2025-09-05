@@ -2,7 +2,9 @@ NAME = minishell
 LEXER = srcs/lexer
 PARSER = srcs/parser
 EXECUTER = srcs/execution
-BUILTINS = srcs/builtins
+BUILTINS = srcs/builtins/ft_echo.c srcs/builtins/ft_cd.c srcs/builtins/ft_pwd.c \
+					 srcs/builtins/ft_export.c srcs/builtins/ft_unset.c srcs/builtins/ft_env.c \
+					 srcs/builtins/ft_exit.c
 UTILS = srcs/utils
 SRCS = srcs/bby_shell.c \
 	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\
@@ -10,7 +12,7 @@ SRCS = srcs/bby_shell.c \
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER)/execute.c $(EXECUTER)/execute_commands.c\
 	   $(EXECUTER)/redirect.c $(EXECUTER)/find_executable.c\
-	   $(BUILTINS)/ft_echo.c $(BUILTINS)/ft_cd.c $(BUILTINS)/ft_pwd.c \
+	   $(BUILTINS) \
 	   $(UTILS)/clean_up.c $(UTILS)/error_utils.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft

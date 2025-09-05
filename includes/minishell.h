@@ -160,9 +160,10 @@ void	error_and_exit(char *err_msg, int exit_status);
 // ---------------------------------------- //
 
 // --------------- BUILTINS  -------------- //
-int	echo(t_cmd *cmd, int out_fd);
-int	cd(t_cmd *cmd, int out_fd);
-int	pwd(t_cmd *cmd, int out_fd);
+int	ft_echo(t_cmd *cmd, int out_fd);
+int	ft_cd(t_cmd *cmd, int out_fd);
+int	ft_pwd(t_cmd *cmd, int out_fd);
+int	ft_exit(t_cmd *cmd, int out_fd);
 // ---------------------------------------- //
 
 void debug_lexer(t_list *token_list, const char *input);
