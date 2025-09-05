@@ -150,6 +150,9 @@ void	set_in_fd(
 void	set_out_fd(
 	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
 
+// execution/init_context.c
+void	init_exec(t_exec_context *exec_context, char **envp);
+
 // utils/clean_up.c
 void	free_str_arr(char **arr);
 void	clean_up_commands(t_exec_context *exec_context);

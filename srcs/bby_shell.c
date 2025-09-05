@@ -78,10 +78,10 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	token_list = ft_lstnew(NULL);
+	// free(token_list);
 	token_list = NULL;
 	cmd_head = NULL;
-	exec_context.envp = envp;
-	exec_context.paths = getenv("PATH");
+	init_exec(&exec_context, envp);
 	exec_context.prompt = readline("$> ");
 	while (exec_context.prompt != NULL)
 	{
@@ -120,6 +120,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	clear_history();
 	free(exec_context.prompt);
+	free_str_arr(exec_context.envp);
 	return (exec_context.exit_status);
 }
 
