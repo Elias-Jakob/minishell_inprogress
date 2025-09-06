@@ -150,6 +150,9 @@ void	set_in_fd(
 void	set_out_fd(
 	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
 
+// execution/init_context.c
+void	init_exec(t_exec_context *exec_context, char **envp);
+
 // utils/clean_up.c
 void	free_str_arr(char **arr);
 void	clean_up_commands(t_exec_context *exec_context);
@@ -160,9 +163,10 @@ void	error_and_exit(char *err_msg, int exit_status);
 // ---------------------------------------- //
 
 // --------------- BUILTINS  -------------- //
-int	echo(t_cmd *cmd, int out_fd);
-int	cd(t_cmd *cmd, int out_fd);
-int	pwd(t_cmd *cmd, int out_fd);
+int	ft_echo(t_cmd *cmd, int out_fd);
+int	ft_cd(t_cmd *cmd, int out_fd);
+int	ft_pwd(t_cmd *cmd, int out_fd);
+int	ft_exit(t_cmd *cmd, int out_fd);
 // ---------------------------------------- //
 
 void debug_lexer(t_list *token_list, const char *input);

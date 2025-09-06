@@ -71,50 +71,56 @@ void free_cmd(void *content)
 // For lexer/parser
 int	main(int argc, char **argv, char **envp)
 {
-	char			*line;
 	t_list			*token_list;
 	t_cmd			*cmd_head;
 	t_exec_context	exec_context;
 
 	(void)argc;
 	(void)argv;
-	(void)envp;
 	token_list = ft_lstnew(NULL);
+	// free(token_list);
 	token_list = NULL;
 	cmd_head = NULL;
-	exec_context.envp = envp;
-	exec_context.paths = getenv("PATH");
-	line = readline("$> ");
-	while (line != NULL && ft_strncmp("exit", line, 4))
+	init_exec(&exec_context, envp);
+	exec_context.prompt = readline("$> ");
+	while (exec_context.prompt != NULL)
 	{
 		token_list = NULL;
 		cmd_head = NULL;
-		if (lexer(line, &token_list))
+		if (lexer(exec_context.prompt, &token_list))
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head);
-		debug_lexer_and_parser(token_list, cmd_head, line);
+		debug_lexer_and_parser(token_list, cmd_head, exec_context.prompt);
 		ft_lstclear(&token_list, free_token);
 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
 		// ejakob: ejakob makes no mistakes hahah!!! ps. thx for the excellent fix:)
 		// leberton: Never ? Are you sure ? Didn't I see some SEGV's on your screen the other day ? And what fix x) ?
 		// leberton: I like very much all the builtins that are working :))
+		// ejakob: I changed one or two things around here... i hope thats ok. Also, i checked the subject again
+		//         and i noticed that i was doing way too much stuff in cd - we only need to implement absolute and relative paths :0 RTFM!
+		// leberton: Seems nice ! So you store the line from readline into exec_context.prompt right ? Btw idk when I'll write you but I'm comming on tuesday till wednesday
 		exec_context.commands = cmd_head;
 		exec_command_list(&exec_context);
 		clean_up_commands(&exec_context);
+		// TODO: only break if prompt is exit [n]; not break if exit is in a pipeline
+		if (!ft_strncmp("exit", exec_context.prompt, 4))
+			break ;
 		printf("%d ", exec_context.exit_status);
+
 		//
 		//
 		//
 		//
 		// sleep(10);
 		// fix_quotes();
-		add_history(line);
-		free(line);
+		add_history(exec_context.prompt);
+		free(exec_context.prompt);
 		token_list = NULL;
 		cmd_head = NULL;
-		line = readline("$> ");
+		exec_context.prompt = readline("$> ");
 	}
 	clear_history();
-	return (EXIT_SUCCESS);
+	free(exec_context.prompt);
+	free_str_arr(exec_context.envp);
+	return (exec_context.exit_status);
 }
-
