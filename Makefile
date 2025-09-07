@@ -7,7 +7,7 @@ BUILTINS = srcs/builtins/ft_echo.c srcs/builtins/ft_cd.c srcs/builtins/ft_pwd.c 
 UTILS = srcs/utils
 SRCS = srcs/bby_shell.c \
 	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\
-	   $(PARSER)/utils.c $(PARSER)/parse_redirection.c srcs/new_parser/parser.c\
+	   srcs/new_parser/parser.c\
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER) $(BUILTINS)\
 	   $(UTILS)/clean_up.c $(UTILS)/error_utils.c
