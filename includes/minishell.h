@@ -1,20 +1,10 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include "libft.h"
+#include "includes.h"
 #include "env.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <errno.h>
-
-#include <readline/readline.h>
-#include <readline/history.h>
+#include "parser.h"
+#include "lexer.h"
 
 typedef enum e_error
 {
@@ -38,20 +28,6 @@ typedef enum e_builtin
     BUILTIN_EXIT
 }   t_builtin;
 
-typedef enum e_token_type
-{
-	TK_WORD,
-	TK_PIPE,
-	TK_REDIRECT_IN,
-	TK_REDIRECT_OUT,
-	TK_APPEND_OUT,
-	TK_SINGLE_QUOTE,
-	TK_DOUBLE_QUOTE,
-	TK_HEREDOC,
-	TK_ENV,
-	TK_ERROR
-}	t_token_type;
-
 typedef enum e_redir_type
 {
 	RD_STD,
@@ -61,12 +37,6 @@ typedef enum e_redir_type
 	RD_PIPE,
 	RD_HEREDOC
 }	t_redirs_type;
-
-typedef struct	s_token
-{
-		t_token_type	type;
-		char			*value;
-}	t_token;
 
 typedef struct s_redirs
 {
@@ -102,37 +72,6 @@ typedef struct s_exec_context
 	int					stdout_backup;      // NEW: to restore stdout after redirections
 }   t_exec_context;
 
-// ---------------- LEXER ---------------- //
-// utils
-int is_space(char c);
-char *ft_strndup(const char *s1, size_t n);
-
-// scan_token
-t_token_type	scan_for_quotes(char *input, size_t *length);
-t_token_type	scan_for_word(char *input, size_t *length);
-t_token_type	scan_for_env(char *input, size_t *length);
-t_token_type	scan_for_redirect(char *input, size_t *length);
-t_token_type	scan_for_token_type(char *input, size_t *length);
-
-// lexer
-int	lexer(char *input, t_list **token_list);
-// ---------------------------------------- //
-
-
-// ---------------- PARSER ---------------- //
-// utils
-// int		is_token_redirect(t_token_type type);
-// int		is_token_word(t_token_type type);
-// void	append_cmd(t_cmd **head, t_cmd *new_cmd);
-// void	init_redirs_if_needed(t_cmd *cmd);
-// int		get_argv_amount(t_list *start);
-
-// parse redirections
-// t_list	*parse_redirection(t_cmd *cmd, t_list *current);
-
-
-int parser(t_list *token_list, t_cmd **cmd_head);
-// ---------------------------------------- //
 
 // ------------ EXECUTION PART ------------ //
 void	exec_command_list(t_exec_context *exec_context);

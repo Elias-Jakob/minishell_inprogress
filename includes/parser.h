@@ -1,7 +1,6 @@
 #ifndef PARSER_H
 # define PARSER_H
 
-#include "libft.h"
 #include "minishell.h"
 
 int			ensure_redirection_exists(t_cmd *cmd);
