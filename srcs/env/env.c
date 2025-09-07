@@ -1,5 +1,4 @@
 #include "../../includes/libft.h"
-#include <stdio.h>
 
 void	free_env(char **env)
 {
@@ -98,6 +97,7 @@ static char	**set_new_env_variable(char **env, char *key, char *value)
 	char	**new_env;
 	char	*key_value;
 
+	i = 0;
 	new_env = copy_env(env, 1);
 	while (new_env[i])
 		i++;
@@ -159,31 +159,11 @@ char	**unset_env_variable(char **env, char *key)
 
 char	*expand_variables(char *str, char **env)
 {
-	// Find $ and symbols and replace with env_value
-	// TO use in parse maybe so you dont have to
-	return (NULL);
-}
+	char	*new_str;
 
-int main(int argc, char **argv, char **envp)
-{
-	(void)argc;
-	(void)argv;
-	int		i;
-	char	**env;
-
-	env = copy_env(envp, 0);
-	char *env_val = get_env_value(env, "LEO");
-	env = set_env_variable(env, "LEO", "Leonardo");
-	printf("%s\n", get_env_value(env, "LEO"));
-	sleep(2);
-	env = set_env_variable(env, "LEO", "Hello new var");
-	printf("%s\n", get_env_value(env, "LEO"));
-	sleep(2);
-	env = unset_env_variable(env, "LEO");
-	i = 0;
-	while (env[i])
-		printf("%s\n", env[i++]);
-	sleep(1);
-	free_env(env);
-	return (0);
+	new_str = get_env_value(env, str);
+	if (new_str == NULL)
+		return (str);
+	str = new_str;
+	return (str);
 }
