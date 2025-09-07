@@ -3,7 +3,7 @@
 static t_token	*get_current_token(t_list *token_list);
 static t_cmd	*create_new_command(t_token *token);
 static t_redirs	*init_redirection(void);
-static int	handle_redirection(t_cmd **current_cmd, t_list **token_node);
+static int	handle_redirection(t_cmd **current_cmd, t_list **token_node, t_cmd **cmd_head);
 static int	handle_pipe(t_cmd **current_cmd);
 static int	count_argv_size(char **argv);
 static int	add_argv_to_command(t_cmd *cmd, t_token *token);
@@ -35,22 +35,15 @@ int parser(t_list *token_list, t_cmd **cmd_head)
 					last = last->next;
 				last->next = new_cmd;
 			}
-			printf("Token val: %s\n", token->value);
 			current_cmd = new_cmd;
 		}
 		else if ((token->type == TK_WORD || token->type == TK_DOUBLE_QUOTE || token->type == TK_SINGLE_QUOTE) && current_cmd)
-		{
-			printf("Add argv\n");
 			add_argv_to_command(current_cmd, token);
-		}
 		else if (token->type == TK_PIPE)
-		{
-			printf("Handling pipe\n");
 			handle_pipe(&current_cmd);
-		}
 		else if (is_redirection_token(token))
 		{
-			if (handle_redirection(&current_cmd, &current_token_node) == EXIT_FAILURE)
+			if (handle_redirection(&current_cmd, &current_token_node, cmd_head) == EXIT_FAILURE)
 				return (EXIT_FAILURE);
 		}
 		current_token_node = current_token_node->next;
@@ -73,18 +66,6 @@ static void	cleanup_heredoc(t_redirs *redirs)
 		redirs->heredoc_content = NULL;
 	}
 }
-
-// static void	free_redirection(t_redirs *redirs)
-// {
-// 	if (redirs)
-// 	{
-// 		free(redirs->infile_name);
-// 		free(redirs->outfile_name);
-// 		free(redirs->heredoc_delimiter);
-// 		cleanup_heredoc(redirs);
-// 		free(redirs);
-// 	}
-// }
 
 static int	handle_heredoc(t_cmd **current_cmd, t_token *delimiter_token)
 {
@@ -244,7 +225,7 @@ static int	add_argv_to_command(t_cmd *cmd, t_token *token)
 	return (EXIT_SUCCESS);
 }
 
-static int	handle_redirection(t_cmd **current_cmd, t_list **token_node)
+static int	handle_redirection(t_cmd **current_cmd, t_list **token_node, t_cmd **cmd_head)
 {
 	t_token	*redir_token;
 	t_token	*file_token;
@@ -258,6 +239,15 @@ static int	handle_redirection(t_cmd **current_cmd, t_list **token_node)
 		*current_cmd = create_new_command(NULL);
 		if (!*current_cmd)
 			return (EXIT_FAILURE);
+		if (!*cmd_head)
+			*cmd_head = *current_cmd;
+		else
+		{
+			t_cmd *last = *cmd_head;
+			while (last->next)
+				last = last->next;
+			last->next = *current_cmd;
+		}
 	}
 	if (!(*current_cmd)->redirs)
 	{

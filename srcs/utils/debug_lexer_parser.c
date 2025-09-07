@@ -170,14 +170,11 @@ void debug_parser(t_cmd *cmd_head, const char *input)
     {
         printf(RED "🛂 Command list is NULL!\n" RESET);
         printf("========================================\n\n");
-        return;
     }
     
     int cmd_count = 0;
-    int empty_cmd_count = 0;  // Compteur pour les commandes sans argv
+    int empty_cmd_count = 0;
     t_cmd *current = cmd_head;
-    
-    // Compter les commandes et analyser leur contenu
     while (current)
     {
         cmd_count++;
@@ -185,11 +182,8 @@ void debug_parser(t_cmd *cmd_head, const char *input)
             empty_cmd_count++;
         current = current->next;
     }
-    
     printf("Command count: " GREEN "%d" RESET "\n", cmd_count);
     printf("Pipeline detected: %s\n", (cmd_count > 1) ? "Yes" : "No");
-    
-    // Information spéciale pour les commandes sans argv
     if (empty_cmd_count > 0)
     {
         if (empty_cmd_count == cmd_count)
@@ -197,7 +191,6 @@ void debug_parser(t_cmd *cmd_head, const char *input)
         else
             printf(CYAN "ℹ️  %d redirection-only command(s) detected\n" RESET, empty_cmd_count);
     }
-    
     printf("----------------------------------------\n");
     current = cmd_head;
     int cmd_index = 0;
