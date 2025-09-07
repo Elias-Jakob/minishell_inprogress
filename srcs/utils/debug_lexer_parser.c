@@ -104,7 +104,10 @@ static void print_redirection_details(t_redirs *redirs)
         if (redirs->infile_name)
             printf(" -> \"%s\"", redirs->infile_name);
         if (redirs->heredoc_delimiter)
+		{
             printf(" (delimiter: \"%s\")", redirs->heredoc_delimiter);
+			printf(" (file path: \"%s\")", redirs->heredoc_content);
+		}
         printf("\n");
     }
     if (redirs->out_type != RD_STD)
