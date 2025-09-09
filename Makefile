@@ -3,6 +3,7 @@ LEXER = srcs/lexer
 PARSER = srcs/parser/parser.c srcs/parser/heredoc.c srcs/parser/management_command.c srcs/parser/management_token.c srcs/parser/redirection_handlers.c srcs/parser/token_processing.c srcs/parser/utils.c
 EXECUTER = srcs/execution/execute.c srcs/execution/execute_commands.c srcs/execution/redirect.c \
 					 srcs/execution/find_executable.c srcs/execution/init_context.c
+ENV = srcs/env/env.c srcs/env/utils.c
 BUILTINS = srcs/builtins/ft_echo.c srcs/builtins/ft_cd.c srcs/builtins/ft_pwd.c srcs/builtins/ft_exit.c
 UTILS = srcs/utils
 SRCS = srcs/bby_shell.c \
@@ -10,7 +11,8 @@ SRCS = srcs/bby_shell.c \
 	   $(PARSER)\
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER) $(BUILTINS)\
-	   $(UTILS)/clean_up.c $(UTILS)/error_utils.c
+	   $(UTILS)/clean_up.c $(UTILS)/error_utils.c\
+	   $(ENV)
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a

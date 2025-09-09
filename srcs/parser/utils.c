@@ -1,4 +1,4 @@
-#include "../../includes/parser.h"
+#include "../../includes/minishell.h"
 
 int	ensure_redirection_exists(t_cmd *cmd)
 {
@@ -21,7 +21,7 @@ int	validate_redirection_sequence(t_list *token_node)
 	return (EXIT_SUCCESS);
 }
 
-int	add_argument_to_command(t_cmd *cmd, t_token *token)
+int	add_argument_to_command(t_cmd *cmd, t_token *token, char **env)
 {
 	int		count;
 	char	**new_argv;
@@ -33,7 +33,10 @@ int	add_argument_to_command(t_cmd *cmd, t_token *token)
 	if (new_argv == NULL)
 		return (EXIT_FAILURE);
 	cmd->argv = new_argv;
-	cmd->argv[count] = ft_strdup(token->value);
+	if (token->type == TK_ENV && get_env_value(env, token->value + 1) != NULL)
+			cmd->argv[count] = ft_strdup(get_env_value(env, token->value + 1));
+	else
+		cmd->argv[count] = ft_strdup(token->value);
 	if (cmd->argv[count] == NULL)
 		return (EXIT_FAILURE);
 	cmd->argv[count + 1] = NULL;

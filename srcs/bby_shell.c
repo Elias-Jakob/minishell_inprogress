@@ -74,6 +74,7 @@ int	main(int argc, char **argv, char **envp)
 	t_list			*token_list;
 	t_cmd			*cmd_head;
 	t_exec_context	exec_context;
+	char			**env;
 
 	(void)argc;
 	(void)argv;
@@ -83,14 +84,15 @@ int	main(int argc, char **argv, char **envp)
 	cmd_head = NULL;
 	init_exec(&exec_context, envp);
 	exec_context.prompt = readline("$> ");
+	env = copy_env(envp, 0);
 	while (exec_context.prompt != NULL)
 	{
 		token_list = NULL;
 		cmd_head = NULL;
 		if (lexer(exec_context.prompt, &token_list))
 			return (EXIT_FAILURE);
-		parser(token_list, &cmd_head);
-		debug_lexer_and_parser(token_list, cmd_head, exec_context.prompt);
+		parser(token_list, &cmd_head, env);
+		// debug_lexer_and_parser(token_list, cmd_head, exec_context.prompt);
 		ft_lstclear(&token_list, free_token);
 		// leberton: Hmmmmmm so it is my fault not yours if I understand it correctly... My bad :D
 		// ejakob: ejakob makes no mistakes hahah!!! ps. thx for the excellent fix:)

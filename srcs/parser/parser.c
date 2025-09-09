@@ -1,17 +1,17 @@
 #include "../../includes/parser.h"
 
-static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head);
-static int	process_current_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head);
+static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head, char **env);
+static int	process_current_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head, char **env);
 
-int	parser(t_list *token_list, t_cmd **cmd_head)
+int	parser(t_list *token_list, t_cmd **cmd_head, char **env)
 {
 	*cmd_head = NULL;
 	if (!token_list)
 		return (EXIT_SUCCESS);
-	return (parse_token_sequence(token_list, cmd_head));
+	return (parse_token_sequence(token_list, cmd_head, env));
 }
 
-static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head)
+static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head, char **env)
 {
 	int		result;
 	t_list	*current_token_node;
@@ -21,7 +21,7 @@ static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head)
 	current_cmd = NULL;
 	while (current_token_node)
 	{
-		result = process_current_token(&current_token_node, &current_cmd, cmd_head);
+		result = process_current_token(&current_token_node, &current_cmd, cmd_head, env);
 		if (result == EXIT_FAILURE)
 			return (EXIT_FAILURE);
 		current_token_node = advance_token_node(current_token_node);
@@ -29,7 +29,7 @@ static int	parse_token_sequence(t_list *token_list, t_cmd **cmd_head)
 	return (EXIT_SUCCESS);
 }
 
-static int	process_current_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head)
+static int	process_current_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head, char **env)
 {
 	t_token	*token;
 
@@ -38,7 +38,7 @@ static int	process_current_token(t_list **token_node, t_cmd **current_cmd, t_cmd
 		return (EXIT_FAILURE);
 	if (token->type == TK_WORD || token->type == TK_DOUBLE_QUOTE || token->type == TK_SINGLE_QUOTE
 		|| token->type == TK_ENV)
-		return (process_word_token(token, current_cmd, cmd_head));
+		return (process_word_token(token, current_cmd, cmd_head, env));
 	else if (token->type == TK_PIPE)
 		return (process_pipe_token(current_cmd));
 	else if (is_redirection_token(token))

@@ -1,6 +1,6 @@
 #include "../../includes/parser.h"
 
-int	process_word_token(t_token *token, t_cmd **current_cmd, t_cmd **cmd_head)
+int	process_word_token(t_token *token, t_cmd **current_cmd, t_cmd **cmd_head, char **env)
 {
 	if (!*current_cmd)
 	{
@@ -9,7 +9,7 @@ int	process_word_token(t_token *token, t_cmd **current_cmd, t_cmd **cmd_head)
 			return (EXIT_FAILURE);
 		return (append_command_to_list(*current_cmd, cmd_head));
 	}
-	return (add_argument_to_command(*current_cmd, token));
+	return (add_argument_to_command(*current_cmd, token, env));
 }
 
 int	process_pipe_token(t_cmd **current_cmd)
