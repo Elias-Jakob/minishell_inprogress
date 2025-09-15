@@ -3,3 +3,4 @@
 *.a
 libft/*.o
 minishell
+PARSING_TODO.md
