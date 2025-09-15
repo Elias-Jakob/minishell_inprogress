@@ -1,17 +1,5 @@
 #include "../../includes/minishell.h"
 
-static size_t	str_arr_len(char **arr)
-{
-	size_t	len;
-
-	if (!arr)
-		return (0);
-	len = 0;
-	while (arr[len])
-		len++;
-	return (len);
-}
-
 static char	**copy_envp(char **envp)
 {
 	char	**alloc_envp;
@@ -27,7 +15,6 @@ static char	**copy_envp(char **envp)
 	{
 		alloc_envp[i] = ft_strdup(envp[i]);
 		if (!alloc_envp[i])
-			// WARNING: passing uninitialised stuff here to free_str_arr
 			return (free_str_arr(alloc_envp),
 			perror("init_envp: ft_strdup failed"), NULL);
 		i++;
