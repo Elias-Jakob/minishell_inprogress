@@ -1,5 +1,18 @@
 #include "../../includes/minishell.h"
 
+static void	close_unused_fds(t_exec_context *exec_context, t_cmd *command)
+{
+	if (command->redirs)
+	{
+		if (command->redirs->fds[0] != STDIN_FILENO
+			&& close(command->redirs->fds[0]) == -1)
+			fatal_error(exec_context, "close failed");
+		if (command->redirs->fds[1] != STDOUT_FILENO
+			&& close(command->redirs->fds[1]) == -1)
+			fatal_error(exec_context, "close failed");
+	}
+}
+
 int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 {
 	(void)exec_context;
@@ -16,6 +29,7 @@ int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 		builtin->exit_status = ft_pwd(builtin, out_fd);
 	else if (!ft_strncmp("exit", builtin->argv[0], 4))
 		builtin->exit_status = ft_exit(builtin, out_fd);
+	close_unused_fds(exec_context, builtin);
 	return (0);
 }
 
@@ -46,15 +60,6 @@ int	launch_child_process(t_exec_context *exec_context, t_cmd *command)
 		clean_up_commands(exec_context);
 		exit(exit_status);
 	}
-	// parent (closing fds we dont need)
-	if (command->redirs)
-	{
-		if (command->redirs->fds[0] != STDIN_FILENO
-			&& close(command->redirs->fds[0]) == -1)
-			fatal_error(exec_context, "close failed");
-		if (command->redirs->fds[1] != STDOUT_FILENO
-			&& close(command->redirs->fds[1]) == -1)
-			fatal_error(exec_context, "close failed");
-	}
+	close_unused_fds(exec_context, command);
 	return (command->pid);
 }
