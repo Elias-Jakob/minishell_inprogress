@@ -89,7 +89,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		token_list = NULL;
 		cmd_head = NULL;
-		if (lexer(exec_context.prompt, &token_list))
+		if (lexer(exec_context.prompt, &token_list, env))
 			return (EXIT_FAILURE);
 		parser(token_list, &cmd_head, env);
 		// debug_lexer_and_parser(token_list, cmd_head, exec_context.prompt);

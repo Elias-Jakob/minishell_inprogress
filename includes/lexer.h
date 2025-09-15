@@ -9,12 +9,12 @@
 int				is_space(char c);
 char			*ft_strndup(const char *s1, size_t n);
 
-t_token_type	scan_for_quotes(char *input, size_t *length);
+t_token_type	scan_for_quotes(char *input, size_t *length, char **env);
 t_token_type	scan_for_word(char *input, size_t *length);
 t_token_type	scan_for_env(char *input, size_t *length);
 t_token_type	scan_for_redirect(char *input, size_t *length);
-t_token_type	scan_for_token_type(char *input, size_t *length);
+t_token_type	scan_for_token_type(char *input, size_t *length, char **env);
 
-int				lexer(char *input, t_list **token_list);
+int				lexer(char *input, t_list **token_list, char **env);
 
 #endif

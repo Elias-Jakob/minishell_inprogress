@@ -64,6 +64,7 @@ char	*expand_variables(char *str, char **env)
 	new_str = get_env_value(env, str);
 	if (new_str == NULL)
 		return (str);
+	printf("Gotten env val: %s\n", new_str);
 	str = new_str;
 	return (str);
 }
