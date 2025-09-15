@@ -79,7 +79,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	token_list = ft_lstnew(NULL);
-	// free(token_list);
+	free(token_list);
 	token_list = NULL;
 	cmd_head = NULL;
 	init_exec(&exec_context, envp);

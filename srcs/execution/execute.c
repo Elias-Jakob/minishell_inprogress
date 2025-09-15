@@ -27,6 +27,8 @@ int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 		builtin->exit_status = ft_cd(builtin, out_fd);
 	else if (!ft_strncmp("pwd", builtin->argv[0], 3))
 		builtin->exit_status = ft_pwd(builtin, out_fd);
+	else if (!ft_strncmp("export", builtin->argv[0], 6))
+		builtin->exit_status = ft_export(exec_context, builtin, out_fd);
 	else if (!ft_strncmp("exit", builtin->argv[0], 4))
 		builtin->exit_status = ft_exit(builtin, out_fd);
 	close_unused_fds(exec_context, builtin);
