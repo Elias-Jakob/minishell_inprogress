@@ -33,19 +33,19 @@ int	is_token_builtin(t_token *token)
 {
 	if (token == NULL || token->value == NULL)
 		return (EXIT_FAILURE);
-	if (ft_strncmp(token->value, "echo", 4) == 0)
+	if (ft_strncmp(token->value, "echo", 5) == 0 && ft_strlen(token->value) == 4)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "cd", 2) == 0)
+	if (ft_strncmp(token->value, "cd", 3) == 0 && ft_strlen(token->value) == 2)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "pwd", 3) == 0)
+	if (ft_strncmp(token->value, "pwd", 4) == 0 && ft_strlen(token->value) == 3)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "export", 6) == 0)
+	if (ft_strncmp(token->value, "export", 7) == 0 && ft_strlen(token->value) == 6)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "unset", 5) == 0)
+	if (ft_strncmp(token->value, "unset", 6) == 0 && ft_strlen(token->value) == 5)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "env", 3) == 0)
+	if (ft_strncmp(token->value, "env", 4) == 0 && ft_strlen(token->value) == 3)
 		return (EXIT_SUCCESS);
-	if (ft_strncmp(token->value, "exit", 4) == 0)
+	if (ft_strncmp(token->value, "exit", 5) == 0 && ft_strlen(token->value) == 4)
 		return (EXIT_SUCCESS);
 	return (EXIT_FAILURE);
 }

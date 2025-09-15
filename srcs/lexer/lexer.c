@@ -22,7 +22,7 @@ static t_token	*create_token(t_token_type type, char *input, size_t length)
 	return (token);
 }
 
-static void	lex_input(char *input, size_t *i, t_list **token_list)
+static int	lex_input(char *input, size_t *i, t_list **token_list)
 {
 	size_t			length;
 	t_token_type	type;
@@ -35,19 +35,25 @@ static void	lex_input(char *input, size_t *i, t_list **token_list)
 		type = scan_for_token_type(input + *i, &length);
 		if (type == TK_ERROR)
 		{
-			printf("Error: Scanning for token type\n");
-			token = NULL;
+			printf("minishell: syntax error near position %zu\n", *i);
+			return (EXIT_FAILURE);
 		}
-		else
+		token = create_token(type, input + *i, length);
+		if (!token)
+			return (EXIT_FAILURE);
+		new_tok = ft_lstnew((void *)token);
+		if (!new_tok)
 		{
-			token = create_token(type, input + *i, length);
-			new_tok = ft_lstnew((void *)token);
-			ft_lstadd_back(token_list, new_tok);
+			free(token->value);
+			free(token);
+			return (EXIT_FAILURE);
 		}
+		ft_lstadd_back(token_list, new_tok);
 	}
 	else
 		length++;
 	*i += length;
+	return (EXIT_SUCCESS);
 }
 
 int	lexer(char *input, t_list **token_list)
@@ -56,6 +62,9 @@ int	lexer(char *input, t_list **token_list)
 
 	i = 0;
 	while (input[i])
-		lex_input(input, &i, token_list);
+	{
+		if (lex_input(input, &i, token_list) == EXIT_FAILURE)
+			return (EXIT_FAILURE);
+	}
 	return (EXIT_SUCCESS);
 }

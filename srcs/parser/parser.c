@@ -8,6 +8,8 @@ int	parser(t_list *token_list, t_cmd **cmd_head, char **env)
 	*cmd_head = NULL;
 	if (!token_list)
 		return (EXIT_SUCCESS);
+	if (validate_token_sequence(token_list) == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	return (parse_token_sequence(token_list, cmd_head, env));
 }
 

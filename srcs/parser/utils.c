@@ -17,7 +17,59 @@ int	validate_redirection_sequence(t_list *token_node)
 
 	next_token = get_next_token(token_node);
 	if (next_token == NULL)
+	{
+		printf("minishell: syntax error: expected filename after redirection\n");
 		return (EXIT_FAILURE);
+	}
+	if (is_redirection_token(next_token) || next_token->type == TK_PIPE)
+	{
+		printf("minishell: syntax error: unexpected token after redirection\n");
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
+}
+
+int	validate_pipe_sequence(t_list *token_node)
+{
+	t_token	*next_token;
+
+	next_token = get_next_token(token_node);
+	if (next_token == NULL)
+	{
+		printf("minishell: syntax error: unexpected end of input after pipe\n");
+		return (EXIT_FAILURE);
+	}
+	if (next_token->type == TK_PIPE)
+	{
+		printf("minishell: syntax error: unexpected pipe after pipe\n");
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
+}
+
+int	validate_token_sequence(t_list *token_list)
+{
+	t_list	*current;
+	t_token	*token;
+
+	if (!token_list)
+		return (EXIT_SUCCESS);
+	current = token_list;
+	token = (t_token *)current->content;
+	if (token->type == TK_PIPE)
+	{
+		printf("minishell: syntax error: unexpected pipe at beginning\n");
+		return (EXIT_FAILURE);
+	}
+	while (current)
+	{
+		token = (t_token *)current->content;
+		if (token->type == TK_PIPE && validate_pipe_sequence(current) == EXIT_FAILURE)
+			return (EXIT_FAILURE);
+		if (is_redirection_token(token) && validate_redirection_sequence(current) == EXIT_FAILURE)
+			return (EXIT_FAILURE);
+		current = current->next;
+	}
 	return (EXIT_SUCCESS);
 }
 

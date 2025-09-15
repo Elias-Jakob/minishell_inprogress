@@ -7,6 +7,8 @@
 
 int			ensure_redirection_exists(t_cmd *cmd);
 int			validate_redirection_sequence(t_list *token_node);
+int			validate_pipe_sequence(t_list *token_node);
+int			validate_token_sequence(t_list *token_list);
 int			add_argument_to_command(t_cmd *cmd, t_token *token, char **env);
 int			count_argv_size(char **argv);
 t_redirs	*init_redirection(void);
