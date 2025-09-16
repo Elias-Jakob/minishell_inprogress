@@ -48,11 +48,14 @@ static void	export_name(t_exec_context *exec_context, char *arg)
 		fatal_error(exec_context, "");
 	if (!name)
 	{
-		if (!env_name_add(exec_context, new_name))
+		if (!modify_envp(exec_context, 1, new_name))
 			fatal_error(exec_context, "");
 	}
 	else
-		env_value_update(name, new_name);
+	{
+		free(*name);
+		*name = new_name;
+	}
 }
 
 int	ft_export(t_exec_context *exec_context, t_cmd *cmd, int out_fd)
@@ -70,9 +73,9 @@ int	ft_export(t_exec_context *exec_context, t_cmd *cmd, int out_fd)
 			export_name(exec_context, cmd->argv[n_arg]);
 		else
 		{
-			ft_putstr_fd("export: not an identifier: ", out_fd);
-			ft_putstr_fd(cmd->argv[n_arg], out_fd);
-			ft_putchar_fd('\n', out_fd);
+			ft_putstr_fd("export: not an identifier: ", 2);
+			ft_putstr_fd(cmd->argv[n_arg], 2);
+			ft_putchar_fd('\n', 2);
 			exit_status = 1;
 		}
 		n_arg++;

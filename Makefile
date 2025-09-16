@@ -5,7 +5,7 @@ EXECUTER = srcs/execution/execute.c srcs/execution/execute_commands.c srcs/execu
 					 srcs/execution/find_executable.c srcs/execution/init_context.c
 ENV = srcs/env/env.c srcs/env/utils.c
 BUILTINS = srcs/builtins/ft_echo.c srcs/builtins/ft_cd.c srcs/builtins/ft_pwd.c srcs/builtins/ft_export.c \
-					 srcs/builtins/ft_exit.c
+					 srcs/builtins/ft_unset.c srcs/builtins/ft_env.c srcs/builtins/ft_exit.c
 UTILS = srcs/utils
 SRCS = srcs/bby_shell.c \
 	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\

@@ -23,7 +23,10 @@ static void	wait_on_children(t_exec_context *exec_context)
 	t_cmd	*last_cmd;
 	pid_t	finished_pid;
 
+	exec_context->exit_status = 0;
 	current_cmd = exec_context->commands;
+	if (!current_cmd)
+		return ;
 	while (current_cmd)
 	{
 		if (!current_cmd->is_builtin)

@@ -13,9 +13,8 @@ static void	close_unused_fds(t_exec_context *exec_context, t_cmd *command)
 	}
 }
 
-int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
+void	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 {
-	(void)exec_context;
 	int	out_fd;
 
 	out_fd = STDOUT_FILENO;
@@ -29,10 +28,13 @@ int	exec_builtin(t_exec_context *exec_context, t_cmd *builtin)
 		builtin->exit_status = ft_pwd(builtin, out_fd);
 	else if (!ft_strncmp("export", builtin->argv[0], 6))
 		builtin->exit_status = ft_export(exec_context, builtin, out_fd);
+	else if (!ft_strncmp("unset", builtin->argv[0], 5))
+		builtin->exit_status = ft_unset(exec_context, builtin);
+	else if (!ft_strncmp("env", builtin->argv[0], 3))
+		builtin->exit_status = ft_env(exec_context, builtin, out_fd);
 	else if (!ft_strncmp("exit", builtin->argv[0], 4))
 		builtin->exit_status = ft_exit(builtin, out_fd);
 	close_unused_fds(exec_context, builtin);
-	return (0);
 }
 
 int	launch_child_process(t_exec_context *exec_context, t_cmd *command)

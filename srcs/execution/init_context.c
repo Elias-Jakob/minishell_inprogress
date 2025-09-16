@@ -6,7 +6,7 @@ static char	**copy_envp(char **envp)
 	size_t	arr_len;
 	size_t	i;
 
-	arr_len = str_arr_len(envp);
+	arr_len = env_len(envp);
 	alloc_envp = (char **)malloc(sizeof(char *) * (arr_len + 1));
 	if (!alloc_envp)
 		return (perror("init_envp: malloc failed"), NULL);
