@@ -1,23 +1,15 @@
 #include "../../includes/minishell.h"
 
-static int	check_arg(char *arg)
-{
-	if (arg[0] == '-')
-	{
-		ft_putstr_fd("unset: ", 2);
-		write(2, arg, 2);
-		ft_putstr_fd(": invalid option\n", 2);
-		return (0);
-	}
-	return (1);
-}
-
 int	ft_unset(t_exec_context *exec_context, t_cmd *cmd)
 {
 	size_t	n_arg;
+	int		exit_status;
 
-	n_arg = 1;
-	while (cmd->argv[n_arg])
+	if (!cmd->argv[1])
+		return (ft_putstr_fd("unset: not enough arguments\n", 2), 1);
+	n_arg = 0;
+	exit_status = 0;
+	while (cmd->argv[++n_arg])
 	{
 		if (check_arg(cmd->argv[n_arg]))
 		{
@@ -26,8 +18,12 @@ int	ft_unset(t_exec_context *exec_context, t_cmd *cmd)
 				fatal_error(exec_context, "");
 		}
 		else
-			return (2);
-		n_arg++;
+		{
+			ft_putstr_fd("unset: ", 2);
+			ft_putstr_fd(cmd->argv[n_arg], 2);
+			ft_putstr_fd(": invalid parameter name\n", 2);
+			exit_status = 1;
+		}
 	}
-	return (0);
+	return (exit_status);
 }

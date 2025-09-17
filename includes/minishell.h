@@ -20,8 +20,12 @@ void	set_in_fd(
 void	set_out_fd(
 	t_exec_context *exec_context, t_cmd *command, t_redirs *redirs);
 
-// execution/init_context.c
-void	init_exec(t_exec_context *exec_context, char **envp);
+// utils/init_shell.c
+void	init_context(t_exec_context *exec_context, char **envp);
+
+// utils/signals.c
+void	setup_signals(int is_heredoc);
+int	handle_pending_signals(t_exec_context *exec_context);
 
 // utils/clean_up.c
 void	free_str_arr(char **arr);
@@ -46,6 +50,8 @@ int	ft_export(t_exec_context *exec_context, t_cmd *cmd, int out_fd);
 int	ft_unset(t_exec_context *exec_context, t_cmd *cmd);
 int	ft_env(t_exec_context *exec_context, t_cmd *cmd, int out_fd);
 int	ft_exit(t_cmd *cmd, int out_fd);
+
+int	check_arg(char *arg);
 // ---------------------------------------- //
 
 void debug_lexer(t_list *token_list, const char *input);

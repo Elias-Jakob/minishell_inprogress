@@ -23,8 +23,10 @@ static char	**copy_envp(char **envp)
 	return (alloc_envp);
 }
 
-void	init_exec(t_exec_context *exec_context, char **envp)
+void	init_context(t_exec_context *exec_context, char **envp)
 {
+	setup_signals(0);
+	exec_context->exit_status = 0;
 	exec_context->paths = getenv("PATH");
 	exec_context->envp = copy_envp(envp);
 	if (!exec_context->envp)

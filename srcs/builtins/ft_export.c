@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-static int	check_arg(char *arg)
+int	check_arg(char *arg)
 {
 	size_t	i;
 
