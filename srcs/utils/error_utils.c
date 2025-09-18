@@ -2,9 +2,12 @@
 
 void	fatal_error(t_exec_context *exec_context, char *msg)
 {
-	clean_up_commands(exec_context);
-	free(exec_context->prompt);
-	free_str_arr(exec_context->envp);
+	if (exec_context)
+	{
+		clean_up_commands(exec_context);
+		free(exec_context->prompt);
+		free_str_arr(exec_context->envp);
+	}
 	perror(msg);
 	exit(1);
 }
