@@ -152,9 +152,9 @@ int	main(int argc, char *argv[], char *envp[])
 		change_signal_settings(exec_sigint_handler, &exec_context);
 		handle_pending_signals(&exec_context);
 		add_history(exec_context.prompt);
-		if (lexer(exec_context.prompt, &token_list, exec_context.envp))
+		if (lexer(exec_context.prompt, &token_list, exec_context.envp, exec_context.exit_status))
 			return (EXIT_FAILURE);
-		parser(token_list, &cmd_head, exec_context.envp);
+		parser(token_list, &cmd_head, exec_context.envp, exec_context.exit_status);
 		// debug_lexer_and_parser(token_list, cmd_head, exec_context.prompt);
 		ft_lstclear(&token_list, free_token);
 		handle_pending_signals(&exec_context);

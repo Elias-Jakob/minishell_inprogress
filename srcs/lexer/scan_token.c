@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-char	*expand_env_var(char *input, size_t dollar_pos, char **env)
+char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_status)
 {
 	char	*var_name;
 	char	*var_value;
@@ -11,16 +11,24 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env)
 	size_t	i;
 
 	i = dollar_pos + 1;
-	while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
-		i++;
-	var_len = i - dollar_pos - 1;
+	if (input[dollar_pos + 1] == '?')
+	{
+		i = dollar_pos + 2;
+		var_len = 1;
+	}
+	else
+	{
+		while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+			i++;
+		var_len = i - dollar_pos - 1;
+	}
 	if (var_len == 0)
 		return (ft_strdup(input));
 	var_name = ft_calloc(sizeof(char), var_len + 1);
 	if (!var_name)
 		return (NULL);
 	ft_strlcpy(var_name, input + dollar_pos + 1, var_len + 1);
-	var_value = get_env_value(env, var_name);
+	var_value = get_env_value(env, var_name, last_exit_status);
 	if (!var_value)
 		var_value = "";
 	before_var = ft_calloc(sizeof(char), dollar_pos + 1);
@@ -41,9 +49,10 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env)
 	return (result);
 }
 
-t_token_type	scan_for_quotes(char *input, size_t *length, char **env)
+t_token_type	scan_for_quotes(char *input, size_t *length, char **env, int last_exit_status)
 {
 	char	*expanded;
+	char	*new_expanded;
 	size_t	i;
 
 	if (*input == '"')
@@ -56,7 +65,7 @@ t_token_type	scan_for_quotes(char *input, size_t *length, char **env)
 		{
 			if (expanded[i] == '$')
 			{
-				char *new_expanded = expand_env_var(expanded, i, env);
+				new_expanded = expand_env_var(expanded, i, env, last_exit_status);
 				if (new_expanded)
 				{
 					free(expanded);
@@ -112,6 +121,11 @@ t_token_type	scan_for_word(char *input, size_t *length)
 
 t_token_type	scan_for_env(char *input, size_t *length)
 {
+	if (input[1] == '?')
+	{
+		(*length) += 2;
+		return (TK_ENV);
+	}
 	(*length)++;
 	while (ft_isalpha(input[*length]))
 		(*length)++;
@@ -143,7 +157,7 @@ t_token_type	scan_for_redirect(char *input, size_t *length)
 	return (TK_ERROR);
 }
 
-t_token_type	scan_for_token_type(char *input, size_t *length, char **env)
+t_token_type	scan_for_token_type(char *input, size_t *length, char **env, int last_exit_status)
 {
 	if (*input == '|')
 	{
@@ -155,6 +169,6 @@ t_token_type	scan_for_token_type(char *input, size_t *length, char **env)
 	if (*input == '$')
 		return (scan_for_env(input, length));
 	if (*input == '"' || *input == '\'')
-		return (scan_for_quotes(input, length, env));
+		return (scan_for_quotes(input, length, env, last_exit_status));
 	return (scan_for_word(input, length));
 }

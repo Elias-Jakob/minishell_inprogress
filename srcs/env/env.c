@@ -14,13 +14,15 @@ static int	is_env_name(char *env_name, char *name)
 	return (1);
 }
 
-char	*get_env_value(char **env, char *key)
+char	*get_env_value(char **env, char *key, int last_exit_status)
 {
 	int	i;
 	int	key_len;
 
 	if (!env || !key)
 		return (NULL);
+	if (*key == '?')
+		return (ft_itoa(last_exit_status));
 	i = 0;
 	key_len = ft_strlen(key);
 	while (env[i] != NULL)

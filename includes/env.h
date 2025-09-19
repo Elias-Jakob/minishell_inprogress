@@ -2,7 +2,7 @@
 # define ENV_H
 
 char		*expand_variables(char *str, char **env);
-char		*get_env_value(char **env, char *key);
+char		*get_env_value(char **env, char *key, int last_exit_status);
 
 char		**copy_envp(char **envp);
 void		print_env(t_exec_context *exec_context, int out_fd);
