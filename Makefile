@@ -1,15 +1,28 @@
 NAME = minishell
-LEXER = srcs/lexer
-PARSER = srcs/parser/parser.c srcs/parser/heredoc.c srcs/parser/management_command.c srcs/parser/management_token.c srcs/parser/redirection_handlers.c srcs/parser/token_processing.c srcs/parser/utils.c srcs/parser/expansion.c
+
+LEXER = srcs/lexer/utils.c srcs/lexer/scan_token.c srcs/lexer/token_factory.c \
+		srcs/lexer/scanner_quotes.c srcs/lexer/scanner_env.c \
+		srcs/lexer/scanner_redirect.c srcs/lexer/scanner_operators.c \
+		srcs/lexer/scanner_words.c srcs/lexer/lex_input.c srcs/lexer/lexer.c
+
+PARSER = srcs/parser/parser.c srcs/parser/heredoc.c \
+		 srcs/parser/management_command.c srcs/parser/management_token.c \
+		 srcs/parser/redirection_handlers.c srcs/parser/token_processing.c \
+		 srcs/parser/utils.c srcs/parser/expansion.c
+
 EXECUTER = srcs/execution/execution.c srcs/execution/execute_commands.c srcs/execution/redirect.c \
 					 srcs/execution/find_executable.c
+
 ENV = srcs/env/env.c srcs/env/utils.c
+
 BUILTINS = srcs/builtins/ft_echo.c srcs/builtins/ft_cd.c srcs/builtins/ft_pwd.c srcs/builtins/ft_export.c \
 					 srcs/builtins/ft_unset.c srcs/builtins/ft_env.c srcs/builtins/ft_exit.c
+
 UTILS = srcs/utils/clean_up.c srcs/utils/error_utils.c srcs/utils/init_shell.c \
 				srcs/utils/signals.c
+
 SRCS = srcs/bby_shell.c \
-	   $(LEXER)/utils.c $(LEXER)/scan_token.c $(LEXER)/lexer.c\
+	   $(LEXER)\
 	   $(PARSER)\
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER) $(BUILTINS) $(UTILS)\
