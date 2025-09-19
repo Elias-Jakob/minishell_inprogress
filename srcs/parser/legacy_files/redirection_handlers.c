@@ -1,4 +1,4 @@
-#include "../../includes/parser.h"
+#include "../../../includes/parser.h"
 
 int	handle_input_redirection(t_cmd *cmd, t_token *file_token)
 {

@@ -5,10 +5,23 @@ LEXER = srcs/lexer/utils.c srcs/lexer/scan_token.c srcs/lexer/token_factory.c \
 		srcs/lexer/scanner_redirect.c srcs/lexer/scanner_operators.c \
 		srcs/lexer/scanner_words.c srcs/lexer/lex_input.c srcs/lexer/lexer.c
 
-PARSER = srcs/parser/parser.c srcs/parser/heredoc.c \
-		 srcs/parser/management_command.c srcs/parser/management_token.c \
-		 srcs/parser/redirection_handlers.c srcs/parser/token_processing.c \
-		 srcs/parser/utils.c srcs/parser/expansion.c
+PARSER = srcs/parser/core/parser_core.c \
+		 srcs/parser/validation/validation_token.c \
+		 srcs/parser/validation/validation_pipe_and_redir.c \
+		 srcs/parser/expansion/expansion.c \
+		 srcs/parser/expansion/expansion_env_var.c \
+		 srcs/parser/expansion/variable_parser.c \
+		 srcs/parser/expansion/variable_resolver.c \
+		 srcs/parser/expansion/string_builder.c \
+		 srcs/parser/processors/word_processor.c \
+		 srcs/parser/processors/pipe_processor.c \
+		 srcs/parser/processors/redirection_processor.c \
+		 srcs/parser/factories/command_factory.c \
+		 srcs/parser/factories/redirection_factory.c \
+		 srcs/parser/legacy_files/heredoc.c \
+		 srcs/parser/legacy_files/management_command.c \
+		 srcs/parser/legacy_files/management_token.c \
+		 srcs/parser/legacy_files/redirection_handlers.c
 
 EXECUTER = srcs/execution/execution.c srcs/execution/execute_commands.c srcs/execution/redirect.c \
 					 srcs/execution/find_executable.c
