@@ -48,14 +48,29 @@ t_token_type	scan_for_word(char *input, size_t *length)
 
 t_token_type	scan_for_env(char *input, size_t *length)
 {
+	int	is_in_bracket;
+
+	is_in_bracket = 0;
 	if (input[1] == '?')
 	{
 		(*length) += 2;
 		return (TK_ENV);
 	}
 	(*length)++;
-	while (ft_isalpha(input[*length]))
+	if (input[*length] == '{')
+	{
 		(*length)++;
+		is_in_bracket = 1;
+	}
+	while (ft_isalpha(input[*length]) || input[*length] == '_' || ft_isdigit(input[*length]))
+		(*length)++;
+	if (is_in_bracket == 1)
+	{
+		if (input[*length] == '}')
+			(*length)++;
+		else
+			return (TK_ERROR);
+	}
 	return (TK_ENV);
 }
 

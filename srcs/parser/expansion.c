@@ -8,9 +8,11 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_s
 	char	*before_var;
 	char	*after_var;
 	char	*result;
+	int		is_in_bracket;
 	size_t	var_len;
 	size_t	i;
 
+	is_in_bracket = 0;
 	i = dollar_pos + 1;
 	if (input[dollar_pos + 1] == '?')
 	{
@@ -19,16 +21,27 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_s
 	}
 	else
 	{
-		while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
+		if (input[i] == '{')
+		{
 			i++;
-		var_len = i - dollar_pos - 1;
+			is_in_bracket = 1;
+		}
+		while (input[i] && (ft_isalnum(input[i]) || input[i] == '_' || ft_isdigit(input[i])))
+			i++;
+		if (is_in_bracket)
+			var_len = i - dollar_pos - 2;
+		else
+			var_len = i - dollar_pos - 1;
 	}
 	if (var_len == 0)
 		return (ft_strdup(input));
 	var_name = ft_calloc(sizeof(char), var_len + 1);
 	if (!var_name)
 		return (NULL);
-	ft_strlcpy(var_name, input + dollar_pos + 1, var_len + 1);
+	if (is_in_bracket)
+		ft_strlcpy(var_name, input + dollar_pos + 2, var_len + 1);
+	else
+		ft_strlcpy(var_name, input + dollar_pos + 1, var_len + 1);
 	if (ft_strncmp(var_name, "?", 1) == 0)
 		var_value = ft_itoa(last_exit_status);
 	else
@@ -41,7 +54,10 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_s
 	if (!before_var)
 		return (free(var_name), NULL);
 	ft_strlcpy(before_var, input, dollar_pos + 1);
-	after_var = input + dollar_pos + 1 + var_len;
+	if (is_in_bracket)
+		after_var = input + i + 1;
+	else
+		after_var = input + i;
 	result = ft_calloc(sizeof(char),
 		ft_strlen(before_var) + ft_strlen(var_value) + ft_strlen(after_var) + 1);
 	if (!result)
@@ -50,7 +66,6 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_s
 	ft_strlcat(result, var_value, ft_strlen(before_var) + ft_strlen(var_value) + 1);
 	ft_strlcat(result, after_var,
 		ft_strlen(before_var) + ft_strlen(var_value) + ft_strlen(after_var) + 1);
-
 	if (ft_strncmp(var_name, "?", 1) == 0)
 		free(var_value);
 	free(var_name);
@@ -66,11 +81,9 @@ char	*expand_variables_in_token(char *token_value, char **env, int last_exit_sta
 
 	if (!token_value)
 		return (NULL);
-
 	result = ft_strdup(token_value);
 	if (!result)
 		return (NULL);
-
 	i = 0;
 	while (result[i])
 	{
@@ -100,17 +113,11 @@ char	*process_token_expansion(t_token *token, char **env, int last_exit_status)
 
 	if (!token || !token->value)
 		return (NULL);
-
 	if (token->type == TK_SINGLE_QUOTE)
 		return (ft_strdup(token->value));
-
 	if (token->type == TK_DOUBLE_QUOTE)
-	{
 		return (expand_variables_in_token(token->value, env, last_exit_status));
-	}
-
 	if (token->type == TK_ENV || token->type == TK_WORD)
 		return (expand_variables_in_token(token->value, env, last_exit_status));
-
 	return (ft_strdup(token->value));
 }
