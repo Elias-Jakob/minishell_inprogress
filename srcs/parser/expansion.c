@@ -1,4 +1,5 @@
 #include "../../includes/parser.h"
+#include "../../includes/env.h"
 
 char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_status)
 {
