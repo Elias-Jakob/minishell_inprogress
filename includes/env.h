@@ -1,7 +1,7 @@
 #ifndef ENV_H
 # define ENV_H
 
-char		*expand_variables(char *str, char **env);
+// char		*expand_variables(char *str, char **env);
 char		*get_env_value(char **env, char *key, int last_exit_status);
 
 char		**copy_envp(char **envp);
