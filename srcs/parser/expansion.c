@@ -29,14 +29,14 @@ char	*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_s
 	if (!var_name)
 		return (NULL);
 	ft_strlcpy(var_name, input + dollar_pos + 1, var_len + 1);
-
 	if (ft_strncmp(var_name, "?", 1) == 0)
 		var_value = ft_itoa(last_exit_status);
 	else
+	{
 		var_value = get_env_value(env, var_name);
-
-	if (!var_value)
-		var_value = "";
+		if (!var_value)
+			var_value = "";
+	}
 	before_var = ft_calloc(sizeof(char), dollar_pos + 1);
 	if (!before_var)
 		return (free(var_name), NULL);
@@ -83,6 +83,11 @@ char	*expand_variables_in_token(char *token_value, char **env, int last_exit_sta
 				result = temp;
 				i = 0;
 				continue;
+			}
+			else
+			{
+				free(result);
+				return (NULL);
 			}
 		}
 		i++;

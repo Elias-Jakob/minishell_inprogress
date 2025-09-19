@@ -86,13 +86,13 @@ int	add_argument_to_command(t_cmd *cmd, t_token *token, char **env, int last_exi
 	if (new_argv == NULL)
 		return (EXIT_FAILURE);
 	cmd->argv = new_argv;
-
 	expanded_value = process_token_expansion(token, env, last_exit_status);
 	if (expanded_value)
 		cmd->argv[count] = expanded_value;
 	else
+	{
 		cmd->argv[count] = ft_strdup(token->value);
-
+	}
 	if (cmd->argv[count] == NULL)
 		return (EXIT_FAILURE);
 	cmd->argv[count + 1] = NULL;
