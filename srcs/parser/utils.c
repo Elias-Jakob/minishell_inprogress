@@ -73,7 +73,7 @@ int	validate_token_sequence(t_list *token_list)
 	return (EXIT_SUCCESS);
 }
 
-int	add_argument_to_command(t_cmd *cmd, t_token *token, char **env)
+int	add_argument_to_command(t_cmd *cmd, t_token *token, char **env, int last_exit_status)
 {
 	int		count;
 	char	**new_argv;
@@ -85,8 +85,8 @@ int	add_argument_to_command(t_cmd *cmd, t_token *token, char **env)
 	if (new_argv == NULL)
 		return (EXIT_FAILURE);
 	cmd->argv = new_argv;
-	if (token->type == TK_ENV && get_env_value(env, token->value + 1) != NULL)
-			cmd->argv[count] = ft_strdup(get_env_value(env, token->value + 1));
+	if (token->type == TK_ENV && get_env_value(env, token->value + 1, last_exit_status) != NULL)
+			cmd->argv[count] = ft_strdup(get_env_value(env, token->value + 1, last_exit_status));
 	else
 		cmd->argv[count] = ft_strdup(token->value);
 	if (cmd->argv[count] == NULL)

@@ -12,7 +12,7 @@ int			ensure_redirection_exists(t_cmd *cmd);
 int			validate_redirection_sequence(t_list *token_node);
 int			validate_pipe_sequence(t_list *token_node);
 int			validate_token_sequence(t_list *token_list);
-int			add_argument_to_command(t_cmd *cmd, t_token *token, char **env);
+int			add_argument_to_command(t_cmd *cmd, t_token *token, char **env, int last_exit_status);
 int			count_argv_size(char **argv);
 t_redirs	*init_redirection(void);
 
@@ -26,7 +26,7 @@ t_cmd		*ensure_current_command_exists(t_cmd **current_cmd, t_cmd **cmd_head);
 int			append_command_to_list(t_cmd *new_cmd, t_cmd **cmd_head);
 t_cmd		*create_new_command(t_token *token);
 
-int			process_word_token(t_token *token, t_cmd **current_cmd, t_cmd **cmd_head, char **env);
+int			process_word_token(t_token *token, t_cmd **current_cmd, t_cmd **cmd_head, char **env, int last_exit_status);
 int			process_pipe_token(t_cmd **current_cmd);
 int			process_redirection_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head);
 
@@ -38,6 +38,6 @@ int			handle_heredoc_redirection(t_cmd *cmd, t_token *delimiter_token);
 void		cleanup_heredoc(t_redirs *redir);
 int			create_heredoc_file(char *delimiter, char **tmp_file_path);
 
-int			parser(t_list *token_list, t_cmd **cmd_head, char **env);
+int			parser(t_list *token_list, t_cmd **cmd_head, char **env, int last_exit_status);
 
 #endif

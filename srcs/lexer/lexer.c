@@ -22,7 +22,7 @@ static t_token	*create_token(t_token_type type, char *input, size_t length)
 	return (token);
 }
 
-static int	lex_input(char *input, size_t *i, t_list **token_list, char **env)
+static int	lex_input(char *input, size_t *i, t_list **token_list, char **env, int last_exit_status)
 {
 	size_t			length;
 	t_token_type	type;
@@ -32,7 +32,7 @@ static int	lex_input(char *input, size_t *i, t_list **token_list, char **env)
 	length = 0;
 	if (!is_space(input[*i]))
 	{
-		type = scan_for_token_type(input + *i, &length, env);
+		type = scan_for_token_type(input + *i, &length, env, last_exit_status);
 		if (type == TK_ERROR)
 		{
 			printf("minishell: syntax error near position %zu\n", *i);
@@ -56,14 +56,14 @@ static int	lex_input(char *input, size_t *i, t_list **token_list, char **env)
 	return (EXIT_SUCCESS);
 }
 
-int	lexer(char *input, t_list **token_list, char **env)
+int	lexer(char *input, t_list **token_list, char **env, int last_exit_status)
 {
 	size_t	i;
 
 	i = 0;
 	while (input[i])
 	{
-		if (lex_input(input, &i, token_list, env) == EXIT_FAILURE)
+		if (lex_input(input, &i, token_list, env, last_exit_status) == EXIT_FAILURE)
 			return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
