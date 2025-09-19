@@ -1,0 +1,6 @@
+1. $? -> if positive or negative
+2. echo "Hello world" > out
+3.  export hye=hye | unset hye
+	bby_shell: command not found: unset
+4. Heredoc, command/variable expansion
+5.

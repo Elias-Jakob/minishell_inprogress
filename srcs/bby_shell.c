@@ -146,7 +146,10 @@ int	main(int argc, char *argv[], char *envp[])
 		// handle_pending_signals(&exec_context);
 		token_list = NULL;
 		cmd_head = NULL;
-		exec_context.prompt = readline("$> ");
+		if (exec_context.exit_status == 0)
+			exec_context.prompt = readline("$> ");
+		else
+			exec_context.prompt = readline("\033[31m$>\033[0m ");
 		if (!exec_context.prompt)
 			break ;
 		change_signal_settings(exec_sigint_handler, &exec_context);
