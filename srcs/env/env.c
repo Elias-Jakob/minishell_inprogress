@@ -19,15 +19,13 @@ char	**copy_env(char **envp, unsigned int expand)
 	return (new_env);
 }
 
-char	*get_env_value(char **env, char *key, int last_exit_status)
+char	*get_env_value(char **env, char *key)
 {
 	int	i;
 	int	key_len;
 
 	if (!env || !key)
 		return (NULL);
-	if (*key == '?')
-		return (ft_itoa(last_exit_status));
 	i = 0;
 	key_len = ft_strlen(key);
 	while (env[i] != NULL)
@@ -42,7 +40,7 @@ char	*get_env_value(char **env, char *key, int last_exit_status)
 
 char	**set_env_variable(char **env, char *key, char *value)
 {
-	if (get_env_value(env, key, 0))
+	if (get_env_value(env, key))
 		return (reset_env_variable(env, key, value));
 	else
 		return (set_new_env_variable(env, key, value));

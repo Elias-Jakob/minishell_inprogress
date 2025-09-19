@@ -40,4 +40,8 @@ int			create_heredoc_file(char *delimiter, char **tmp_file_path);
 
 int			parser(t_list *token_list, t_cmd **cmd_head, char **env, int last_exit_status);
 
+char		*expand_env_var(char *input, size_t dollar_pos, char **env, int last_exit_status);
+char		*expand_variables_in_token(char *token_value, char **env, int last_exit_status);
+char		*process_token_expansion(t_token *token, char **env, int last_exit_status);
+
 #endif

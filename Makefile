@@ -1,6 +1,6 @@
 NAME = minishell
 LEXER = srcs/lexer
-PARSER = srcs/parser/parser.c srcs/parser/heredoc.c srcs/parser/management_command.c srcs/parser/management_token.c srcs/parser/redirection_handlers.c srcs/parser/token_processing.c srcs/parser/utils.c
+PARSER = srcs/parser/parser.c srcs/parser/heredoc.c srcs/parser/management_command.c srcs/parser/management_token.c srcs/parser/redirection_handlers.c srcs/parser/token_processing.c srcs/parser/utils.c srcs/parser/expansion.c
 EXECUTER = srcs/execution/execution.c srcs/execution/execute_commands.c srcs/execution/redirect.c \
 					 srcs/execution/find_executable.c
 ENV = srcs/env/env.c srcs/env/utils.c
