@@ -1,22 +1,17 @@
-#include "../../includes/env.h"
+#include "../../includes/minishell.h"
 
-char	**copy_env(char **envp, unsigned int expand)
+static int	is_env_name(char *env_name, char *name)
 {
-	int		i;
-	char	**new_env;
+	size_t	env_name_len;
+	size_t	name_len;
 
-	i = 0;
-	while (envp[i])
-		i++;
-	new_env = malloc(sizeof(char *) * (i + 1 + expand));
-	i = 0;
-	while (envp[i])
-	{
-		new_env[i] = ft_strdup(envp[i]);
-		i++;
-	}
-	new_env[i] = NULL;
-	return (new_env);
+	name_len = ft_strlen(name);
+	if (ft_strncmp(env_name, name, name_len))
+		return (0);
+	env_name_len = ft_strlen(env_name);
+	if (name_len < env_name_len && env_name[name_len] != '=')
+		return (0);
+	return (1);
 }
 
 char	*get_env_value(char **env, char *key)
@@ -38,64 +33,51 @@ char	*get_env_value(char **env, char *key)
 	return (NULL);
 }
 
-char	**set_env_variable(char **env, char *key, char *value)
+char	**look_up_envname(t_exec_context *exec_context, char *name)
 {
-	if (get_env_value(env, key))
-		return (reset_env_variable(env, key, value));
-	else
-		return (set_new_env_variable(env, key, value));
+	size_t	i;
+	size_t	name_len;
+
+	if (!exec_context->envp)
+		return (NULL);
+	i = 0;
+	name_len = 0;
+	while (name[name_len] && name[name_len] != '=')
+		name_len++;
+	while (exec_context->envp[i])
+	{
+		if (!strncmp(exec_context->envp[i], name, name_len))
+			return ((exec_context->envp) + i);
+		i++;
+	}
 	return (NULL);
 }
 
-static char	**copy_env_without_key(char **env, int env_size,
-		int key_len, char *key)
+int	modify_envp(t_exec_context *ctx, int s, char *name)
 {
-	int		i;
-	int		j;
 	char	**new_env;
+	size_t	i;
+	int		offset;
 
-	new_env = malloc(sizeof(char *) * env_size);
+	new_env = (char **)malloc(sizeof(char *) * (env_len(ctx->envp) + 1 + s));
 	if (!new_env)
-		return (env);
+		return (perror("envp: malloc failed"), 0);
 	i = 0;
-	j = 0;
-	while (env[i])
+	offset = 0;
+	while (ctx->envp[i + offset])
 	{
-		if (ft_strncmp(env[i], key, key_len) == 0
-			&& env[i][key_len] == '=')
-		{
-			i++;
-			continue ;
-		}
-		new_env[j] = ft_strdup(env[i]);
-		i++;
-		j++;
+		if (name && is_env_name(ctx->envp[i + offset], name))
+			offset = 1;
+		if (!ctx->envp[i + offset])
+			break ;
+		new_env[i] = ft_strdup(ctx->envp[i + offset]);
+		if (!new_env[i++])
+			return (free_str_arr(new_env), perror("envp: ft_strdup failed"), 0);
 	}
-	new_env[j] = NULL;
-	free_env(env);
-	env = new_env;
-	return (env);
-}
-
-char	**unset_env_variable(char **env, char *key)
-{
-	int		found;
-	int		key_len;
-	int		env_size;
-
-	if (!env || !key)
-		return (env);
-	key_len = ft_strlen(key);
-	env_size = 0;
-	found = 0;
-	while (env[env_size])
-	{
-		if (ft_strncmp(env[env_size], key, key_len) == 0
-			&& env[env_size][key_len] == '=')
-			found = 1;
-		env_size++;
-	}
-	if (found == 0)
-		return (env);
-	return (copy_env_without_key(env, env_size, key_len, key));
+	if (name && s > 0)
+		new_env[i++] = name;
+	new_env[i] = NULL;
+	free_str_arr(ctx->envp);
+	ctx->envp = new_env;
+	return (1);
 }

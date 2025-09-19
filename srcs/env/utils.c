@@ -1,60 +1,52 @@
-#include "../../includes/env.h"
+#include "../../includes/minishell.h"
 
-void	free_env(char **env)
+char	**copy_envp(char **envp)
 {
-	int	i;
+	char	**alloc_envp;
+	size_t	arr_len;
+	size_t	i;
 
+	arr_len = env_len(envp);
+	alloc_envp = (char **)malloc(sizeof(char *) * (arr_len + 1));
+	if (!alloc_envp)
+		return (perror("init_envp: malloc failed"), NULL);
 	i = 0;
-	while (env[i])
-		free(env[i++]);
-	free(env);
-}
-
-char	**set_new_env_variable(char **env, char *key, char *value)
-{
-	int		i;
-	char	**new_env;
-	char	*key_value;
-
-	i = 0;
-	new_env = copy_env(env, 1);
-	while (new_env[i])
-		i++;
-	key_value = ft_calloc(sizeof(char), ft_strlen(key) + ft_strlen(value) + 2);
-	ft_strlcat(key_value, key, ft_strlen(key) + 1);
-	ft_strlcat(key_value, "=", ft_strlen(key) + 2);
-	ft_strlcat(key_value, value, ft_strlen(key) + ft_strlen(value) + 2);
-	new_env[i] = key_value;
-	new_env[i + 1] = NULL;
-	free_env(env);
-	env = new_env;
-	return (new_env);
-}
-
-char	**reset_env_variable(char **env, char *key, char *value)
-{
-	int		i;
-	int		key_length;
-	char	*key_value;
-
-	i = 0;
-	key_length = ft_strlen(key);
-	while (env[i])
+	while (i < arr_len)
 	{
-		if (ft_strncmp(env[i], key, key_length) == 0
-			&& env[i][key_length] == '=')
-			break ;
+		alloc_envp[i] = ft_strdup(envp[i]);
+		if (!alloc_envp[i])
+			return (free_str_arr(alloc_envp),
+			perror("init_envp: ft_strdup failed"), NULL);
 		i++;
 	}
-	if (env[i] == NULL)
-		return (env);
-	key_value = ft_calloc(sizeof(char), key_length + ft_strlen(value) + 2);
-	ft_strlcat(key_value, key, key_length + 1);
-	ft_strlcat(key_value, "=", key_length + 2);
-	ft_strlcat(key_value, value, key_length + ft_strlen(value) + 2);
-	free(env[i]);
-	env[i] = key_value;
-	return (env);
+	alloc_envp[i] = NULL;
+	return (alloc_envp);
+}
+
+void	print_env(t_exec_context *exec_context, int out_fd)
+{
+	size_t	len;
+
+	if (!exec_context->envp)
+		return ;
+	len = 0;
+	while (exec_context->envp[len])
+	{
+		ft_putstr_fd(exec_context->envp[len++], out_fd);
+		ft_putstr_fd("\n", out_fd);
+	}
+}
+
+size_t	env_len(char **arr)
+{
+	size_t	len;
+
+	if (!arr)
+		return (0);
+	len = 0;
+	while (arr[len])
+		len++;
+	return (len);
 }
 
 char	*expand_variables(char *str, char **env)
