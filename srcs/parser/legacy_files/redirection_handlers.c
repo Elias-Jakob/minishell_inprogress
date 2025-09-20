@@ -38,6 +38,6 @@ int	handle_heredoc_redirection(t_cmd *cmd, t_token *delimiter_token)
 	if (create_heredoc_file(delimiter_token->value, &tmp_file_path) == EXIT_FAILURE)
 		return (EXIT_FAILURE);
 	cmd->redirs->in_type = RD_HEREDOC;
-	cmd->redirs->heredoc_content = tmp_file_path;
+	cmd->redirs->infile_name = tmp_file_path;
 	return (EXIT_SUCCESS);
 }
