@@ -34,6 +34,12 @@ int			process_pipe_token(t_cmd **current_cmd);
 //redirection_processor.c
 int			process_redirection_token(t_list **token_node, t_cmd **current_cmd, t_cmd **cmd_head);
 
+//heredoc
+void		cleanup_heredoc(t_redirs *redir);
+char		*create_heredoc_temp_file(void);
+int			read_heredoc_input(int fd, char *delimiter);
+int			create_heredoc_file(char *delimiter, char **tmp_file_path);
+
 int			ensure_redirection_exists(t_cmd *cmd);
 int			validate_redirection_sequence(t_list *token_node);
 int			validate_pipe_sequence(t_list *token_node);
@@ -58,7 +64,6 @@ int			handle_output_redirection(t_cmd *cmd, t_token *file_token);
 int			handle_append_redirection(t_cmd *cmd, t_token *file_token);
 int			handle_heredoc_redirection(t_cmd *cmd, t_token *delimiter_token);
 
-void		cleanup_heredoc(t_redirs *redir);
 int			create_heredoc_file(char *delimiter, char **tmp_file_path);
 
 int			parser(t_list *token_list, t_cmd **cmd_head, char **env, int exit_status);

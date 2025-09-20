@@ -18,7 +18,9 @@ PARSER = srcs/parser/core/parser_core.c \
 		 srcs/parser/processors/redirection_processor.c \
 		 srcs/parser/factories/command_factory.c \
 		 srcs/parser/factories/redirection_factory.c \
-		 srcs/parser/legacy_files/heredoc.c \
+		 srcs/parser/heredoc/heredoc_file_manager.c \
+		 srcs/parser/heredoc/heredoc_input_reader.c \
+		 srcs/parser/heredoc/heredoc_processor.c \
 		 srcs/parser/legacy_files/management_command.c \
 		 srcs/parser/legacy_files/management_token.c \
 		 srcs/parser/legacy_files/redirection_handlers.c
