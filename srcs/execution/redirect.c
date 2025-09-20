@@ -1,4 +1,5 @@
 #include "../../includes/minishell.h"
+#include <fcntl.h>
 
 // heredoc ?
 
@@ -16,8 +17,12 @@ void	set_in_fd(
 	else if (redirs->in_type == RD_FD && redirs->infile_name)
 		redirs->fds[0] = ft_atoi(redirs->infile_name);
 	// TODO: Implement heredoc
-	else if (redirs->in_type == RD_HEREDOC)
-		return ;
+	else if (redirs->in_type == RD_HEREDOC && redirs->infile_name != NULL)
+	{
+		redirs->fds[0] = open(redirs->infile_name, O_RDONLY);
+		if (redirs->fds[0] == -1)
+			fatal_error(exec_context, "heredoc file");
+	}
 }
 
 void	set_out_fd(
