@@ -18,7 +18,18 @@ t_token_type	scan_for_quotes(char *input, size_t *length);
 t_token_type	scan_for_word(char *input, size_t *length);
 t_token_type	scan_for_env(char *input, size_t *length);
 t_token_type	scan_for_redirect(char *input, size_t *length);
+t_token_type	scan_compound_word_token(char *input, size_t *length);
 t_token_type	scan_for_token_type(char *input, size_t *length);
+
+// word_boundary.c
+int				is_word_boundary(char c);
+int				is_operator_boundary(char c);
+int				is_token_boundary(char c);
+
+// component_scanner.c
+int				scan_env_component(char *input, size_t *pos);
+int				scan_quote_component(char *input, size_t *pos);
+void			scan_text_component(char *input, size_t *pos);
 
 int				lex_input(char *input, size_t *i, t_list **token_list);
 int				lexer(char *input, t_list **token_list);

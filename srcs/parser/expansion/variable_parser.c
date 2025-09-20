@@ -15,6 +15,8 @@ size_t	find_variable_end(char *input, size_t dollar_pos, int *is_bracket)
 	}
 	while (input[i] && (ft_isalnum(input[i]) || input[i] == '_'))
 		i++;
+	if (*is_bracket == 1 && input[i] == '}')
+		i++;
 	return (i);
 }
 
@@ -28,7 +30,7 @@ char	*extract_variable_name(char *input, size_t dollar_pos, size_t var_end,
 	if (is_bracket == 1)
 		start++;
 	len = var_end - start;
-	if (is_bracket && input[var_end] == '}')
+	if (is_bracket == 1)
 		len--;
 	return (ft_substr(input, start, len));
 }

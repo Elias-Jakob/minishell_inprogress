@@ -3,7 +3,9 @@ NAME = minishell
 LEXER = srcs/lexer/utils.c srcs/lexer/scan_token.c srcs/lexer/token_factory.c \
 		srcs/lexer/scanner_quotes.c srcs/lexer/scanner_env.c \
 		srcs/lexer/scanner_redirect.c srcs/lexer/scanner_operators.c \
-		srcs/lexer/scanner_words.c srcs/lexer/lex_input.c srcs/lexer/lexer.c
+		srcs/lexer/scanner_words.c srcs/lexer/word_boundary.c \
+		srcs/lexer/component_scanner.c srcs/lexer/compound_word.c \
+		srcs/lexer/lex_input.c srcs/lexer/lexer.c
 
 PARSER = srcs/parser/core/parser_core.c \
 		 srcs/parser/validation/validation_token.c \
