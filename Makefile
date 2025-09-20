@@ -41,7 +41,7 @@ SRCS = srcs/bby_shell.c \
 	   $(PARSER)\
 	   srcs/utils/debug_lexer_parser.c\
 	   $(EXECUTER) $(BUILTINS) $(UTILS)\
-	   $(ENV)
+	   $(ENV) srcs/git_prompt.c
 OBJS = $(SRCS:.c=.o)
 LIBFT_DIR = libft
 LIBFT = libft/libft.a

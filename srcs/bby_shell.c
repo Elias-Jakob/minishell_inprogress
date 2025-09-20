@@ -1,5 +1,7 @@
 #include "../includes/minishell.h"
 
+char	*git_prompt(char *cwd);
+
 void free_token(void *content)
 {
     t_token *token = (t_token *)content;
@@ -146,10 +148,19 @@ int	main(int argc, char *argv[], char *envp[])
 		// handle_pending_signals(&exec_context);
 		token_list = NULL;
 		cmd_head = NULL;
+		char	*prompt;
+		char	*cwd = getcwd(NULL, 0);
+		char	*git = git_prompt(cwd);
+		free(cwd);
+		if (!git)
+			git = ft_strdup("");
 		if (exec_context.exit_status == 0)
-			exec_context.prompt = readline("$> ");
+			prompt = ft_strjoin(git, " $> ");
 		else
-			exec_context.prompt = readline("\033[31m$>\033[0m ");
+			prompt = ft_strdup("\033[31m$>\033[0m ");
+		free(git);
+		exec_context.prompt = readline(prompt);
+		free(prompt);
 		if (!exec_context.prompt)
 			break ;
 		change_signal_settings(exec_sigint_handler, &exec_context);
